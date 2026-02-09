@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    color: #0A0A0A;
+    background: #FAFAFA;
+  }
+
+  ::selection {
+    background-color: #1B1464;
+    color: #FAFAFA;
+  }
+}
+
+@layer components {
+  .section-padding {
+    @apply px-6 py-20 md:px-8 lg:py-28;
+  }
+
+  .gradient-navy {
+    background: linear-gradient(135deg, #1B1464 0%, #2D2080 50%, #110D40 100%);
+  }
+
+  .gradient-hero {
+    background: linear-gradient(160deg, #110D40 0%, #1B1464 40%, #2D2080 100%);
+  }
+
+  .gradient-subtle {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
