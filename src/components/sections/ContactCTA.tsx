@@ -29,15 +29,14 @@ export default function ContactCTA() {
     };
 
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch('https://formspree.io/f/mpqjwgzg', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
 
       if (!res.ok) {
-        const body = await res.json();
-        throw new Error(body.error || 'Something went wrong');
+        throw new Error('Something went wrong. Please try again.');
       }
 
       setFormState('success');
