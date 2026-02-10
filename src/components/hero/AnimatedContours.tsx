@@ -24,14 +24,20 @@ export default function AnimatedContours() {
       ctx.scale(dpr, dpr);
     };
 
-    // Simple noise function (no external dependency)
+    // Multi-octave noise for rich, natural contour patterns
     const noise = (x: number, y: number, t: number): number => {
-      const sx = Math.sin(x * 0.8 + t * 0.3) * 0.5;
-      const sy = Math.cos(y * 0.6 + t * 0.2) * 0.5;
-      const s1 = Math.sin(x * 1.4 + y * 0.9 + t * 0.15) * 0.3;
-      const s2 = Math.cos(x * 0.5 - y * 1.3 + t * 0.25) * 0.4;
-      const s3 = Math.sin((x + y) * 0.7 + t * 0.1) * 0.3;
-      return (sx + sy + s1 + s2 + s3) / 2;
+      // Primary large-scale terrain
+      const s1 = Math.sin(x * 1.2 + t * 0.25) * 0.5;
+      const s2 = Math.cos(y * 0.9 + t * 0.18) * 0.5;
+      const s3 = Math.sin(x * 1.8 + y * 1.1 + t * 0.12) * 0.35;
+      const s4 = Math.cos(x * 0.7 - y * 1.6 + t * 0.2) * 0.4;
+      // Medium-scale ridges
+      const s5 = Math.sin((x + y) * 1.1 + t * 0.08) * 0.25;
+      const s6 = Math.cos((x * 1.5 - y * 0.8) + t * 0.15) * 0.2;
+      // Fine detail
+      const s7 = Math.sin(x * 2.5 + y * 2.2 + t * 0.1) * 0.15;
+      const s8 = Math.cos(x * 3.0 - y * 1.8 + t * 0.06) * 0.1;
+      return (s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8) / 2.45;
     };
 
     const draw = () => {
@@ -44,34 +50,39 @@ export default function AnimatedContours() {
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
 
-      const xStep = 6; // Horizontal spacing between vertical hash columns
-      const yStep = 2; // Vertical scan resolution (fine for accurate crossing detection)
-      const tickHalf = 9; // Half-height of each vertical tick mark (3× for wider contours)
-      const numContours = 12;
+      const xStep = 4;
+      const yStep = 2;
+      const tickHalf = 10;
+      const numContours = 24;
 
       for (let c = 0; c < numContours; c++) {
         const threshold = (c / numContours) * 2 - 1;
-        const alpha = 0.03 + (c % 3 === 0 ? 0.04 : 0);
+        const isMajor = c % 4 === 0;
+        const isMid = c % 2 === 0;
+
+        // Higher base alpha so contours are actually visible
+        const alpha = isMajor ? 0.14 : isMid ? 0.08 : 0.05;
 
         ctx.beginPath();
-        ctx.strokeStyle = c % 4 === 0
-          ? `rgba(184, 134, 11, ${alpha * 1.5})`
+        ctx.strokeStyle = isMajor
+          ? `rgba(184, 134, 11, ${alpha})`
           : `rgba(255, 255, 255, ${alpha})`;
-        ctx.lineWidth = c % 3 === 0 ? 1.2 : 0.6;
+        ctx.lineWidth = isMajor ? 1.5 : isMid ? 1 : 0.7;
 
         for (let x = 0; x < w; x += xStep) {
-          const nxBase = x / w * 1.33; // Stretched 3× wider (was 4)
+          // Higher frequency = tighter contour spacing across the canvas
+          const nxBase = x / w * 3.5;
 
           let prevVal: number | null = null;
 
           for (let y = 0; y < h; y += yStep) {
-            const ny = y / h * 1.33; // Stretched 3× wider (was 4)
+            const ny = y / h * 3.5;
 
-            // Mouse influence
+            // Mouse influence — subtle terrain warp near cursor
             const dx = (x / w - mx) * 2;
             const dy = (y / h - my) * 2;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            const influence = Math.exp(-dist * dist * 2) * 0.4;
+            const influence = Math.exp(-dist * dist * 1.8) * 0.5;
 
             const val = noise(nxBase, ny, time) + influence;
 
@@ -97,7 +108,7 @@ export default function AnimatedContours() {
         ctx.stroke();
       }
 
-      time += 0.008;
+      time += 0.006;
       animationId = requestAnimationFrame(draw);
     };
 
@@ -126,7 +137,7 @@ export default function AnimatedContours() {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ opacity: 0.6 }}
+      style={{ opacity: 0.7 }}
     />
   );
 }
