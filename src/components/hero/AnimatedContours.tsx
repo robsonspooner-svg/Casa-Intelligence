@@ -15,52 +15,88 @@ export default function AnimatedContours() {
 
     let animationId: number;
     let time = 0;
+    let lastFrameTime = 0;
+    const FRAME_INTERVAL = 1000 / 30; // Cap at 30fps — the slow drift doesn't need 60
+
+    // Render at half resolution for performance, CSS scales it up
+    const RENDER_SCALE = 0.5;
+
+    let renderW = 0;
+    let renderH = 0;
+    let displayW = 0;
+    let displayH = 0;
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
+      displayW = rect.width;
+      displayH = rect.height;
+      renderW = Math.ceil(displayW * RENDER_SCALE);
+      renderH = Math.ceil(displayH * RENDER_SCALE);
+      canvas.width = renderW;
+      canvas.height = renderH;
     };
 
     // Multi-octave noise for rich, natural contour patterns
     const noise = (x: number, y: number, t: number): number => {
-      // Primary large-scale terrain
       const s1 = Math.sin(x * 1.2 + t * 0.25) * 0.5;
       const s2 = Math.cos(y * 0.9 + t * 0.18) * 0.5;
       const s3 = Math.sin(x * 1.8 + y * 1.1 + t * 0.12) * 0.35;
       const s4 = Math.cos(x * 0.7 - y * 1.6 + t * 0.2) * 0.4;
-      // Medium-scale ridges
       const s5 = Math.sin((x + y) * 1.1 + t * 0.08) * 0.25;
       const s6 = Math.cos((x * 1.5 - y * 0.8) + t * 0.15) * 0.2;
-      // Fine detail
       const s7 = Math.sin(x * 2.5 + y * 2.2 + t * 0.1) * 0.15;
       const s8 = Math.cos(x * 3.0 - y * 1.8 + t * 0.06) * 0.1;
       return (s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8) / 2.45;
     };
 
-    const draw = () => {
-      const rect = canvas.getBoundingClientRect();
-      const w = rect.width;
-      const h = rect.height;
+    // Grid step in render-space pixels
+    const xStep = 3; // ~6px display equiv at half res
+    const yStep = 2; // ~4px display equiv
+    const tickHalf = 5; // ~10px display equiv
 
-      ctx.clearRect(0, 0, w, h);
+    const draw = (timestamp: number) => {
+      animationId = requestAnimationFrame(draw);
+
+      // Throttle to 30fps
+      if (timestamp - lastFrameTime < FRAME_INTERVAL) return;
+      lastFrameTime = timestamp;
+
+      if (renderW === 0 || renderH === 0) return;
+
+      ctx.clearRect(0, 0, renderW, renderH);
 
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
 
-      const xStep = 4;
-      const yStep = 2;
-      const tickHalf = 10;
+      // Step 1: Compute noise field once — reuse for all 24 contour levels
+      const cols = Math.ceil(renderW / xStep);
+      const rows = Math.ceil(renderH / yStep);
+      const field = new Float32Array(cols * rows);
+
+      for (let xi = 0; xi < cols; xi++) {
+        const x = xi * xStep;
+        const nx = (x / renderW) * 3.5;
+        const mxDx = (x / renderW - mx) * 2;
+
+        for (let yi = 0; yi < rows; yi++) {
+          const y = yi * yStep;
+          const ny = (y / renderH) * 3.5;
+
+          const myDy = (y / renderH - my) * 2;
+          const distSq = mxDx * mxDx + myDy * myDy;
+          const influence = Math.exp(-distSq * 1.8) * 0.5;
+
+          field[xi * rows + yi] = noise(nx, ny, time) + influence;
+        }
+      }
+
+      // Step 2: March contours against pre-computed field
       const numContours = 24;
 
       for (let c = 0; c < numContours; c++) {
         const threshold = (c / numContours) * 2 - 1;
         const isMajor = c % 4 === 0;
         const isMid = c % 2 === 0;
-
-        // Higher base alpha so contours are actually visible
         const alpha = isMajor ? 0.14 : isMid ? 0.08 : 0.05;
 
         ctx.beginPath();
@@ -69,39 +105,22 @@ export default function AnimatedContours() {
           : `rgba(255, 255, 255, ${alpha})`;
         ctx.lineWidth = isMajor ? 1.5 : isMid ? 1 : 0.7;
 
-        for (let x = 0; x < w; x += xStep) {
-          // Higher frequency = tighter contour spacing across the canvas
-          const nxBase = x / w * 3.5;
+        for (let xi = 0; xi < cols; xi++) {
+          const x = xi * xStep;
+          const colOffset = xi * rows;
 
-          let prevVal: number | null = null;
+          for (let yi = 1; yi < rows; yi++) {
+            const val = field[colOffset + yi];
+            const prevVal = field[colOffset + yi - 1];
 
-          for (let y = 0; y < h; y += yStep) {
-            const ny = y / h * 3.5;
-
-            // Mouse influence — subtle terrain warp near cursor
-            const dx = (x / w - mx) * 2;
-            const dy = (y / h - my) * 2;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const influence = Math.exp(-dist * dist * 1.8) * 0.5;
-
-            const val = noise(nxBase, ny, time) + influence;
-
-            // Detect threshold crossing between this sample and the previous
-            if (prevVal !== null) {
-              const crossed = (prevVal < threshold && val >= threshold) ||
-                              (prevVal >= threshold && val < threshold);
-              if (crossed) {
-                // Interpolate exact crossing y position
-                const t = (threshold - prevVal) / (val - prevVal);
-                const crossY = (y - yStep) + t * yStep;
-
-                // Draw a short vertical tick at the crossing point
-                ctx.moveTo(x, crossY - tickHalf);
-                ctx.lineTo(x, crossY + tickHalf);
-              }
+            const crossed = (prevVal < threshold && val >= threshold) ||
+                            (prevVal >= threshold && val < threshold);
+            if (crossed) {
+              const t = (threshold - prevVal) / (val - prevVal);
+              const crossY = ((yi - 1) + t) * yStep;
+              ctx.moveTo(x, crossY - tickHalf);
+              ctx.lineTo(x, crossY + tickHalf);
             }
-
-            prevVal = val;
           }
         }
 
@@ -109,7 +128,6 @@ export default function AnimatedContours() {
       }
 
       time += 0.006;
-      animationId = requestAnimationFrame(draw);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -121,7 +139,7 @@ export default function AnimatedContours() {
     };
 
     resize();
-    draw();
+    animationId = requestAnimationFrame(draw);
 
     window.addEventListener('resize', resize);
     window.addEventListener('mousemove', handleMouseMove);
@@ -137,7 +155,7 @@ export default function AnimatedContours() {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ opacity: 0.7 }}
+      style={{ opacity: 0.7, imageRendering: 'auto' }}
     />
   );
 }
