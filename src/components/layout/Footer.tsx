@@ -1,6 +1,6 @@
 import Brand from '@/components/brand/Brand';
 import Logo from '@/components/brand/Logo';
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { Mail, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import Container from './Container';
 
@@ -40,13 +40,6 @@ export default function Footer() {
               Data-driven analysis that gives you an edge.
             </p>
             <div className="space-y-3 text-sm">
-              <a
-                href="tel:+61400000000"
-                className="flex items-center gap-2 hover:text-white transition-colors"
-              >
-                <Phone className="w-4 h-4 flex-shrink-0" />
-                0400 000 000
-              </a>
               <a
                 href="mailto:hello@casaintelligence.com.au"
                 className="flex items-center gap-2 hover:text-white transition-colors"

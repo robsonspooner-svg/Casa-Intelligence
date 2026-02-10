@@ -11,7 +11,7 @@ import Team from '@/components/sections/Team';
 import ContactCTA from '@/components/sections/ContactCTA';
 
 export const metadata: Metadata = {
-  title: 'Casa Intelligence | Development Intelligence & Feasibility | Sunshine Coast',
+  title: 'Casa Intelligence | Development Feasibility | Sunshine Coast',
   description:
     'Proprietary development intelligence for the Sunshine Coast and South East Queensland. Data-driven feasibility reports, planning analysis, and pre-development advisory. Know your site before you commit.',
   keywords: [

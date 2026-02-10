@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Services | Development Feasibility & Advisory | Sunshine Coast',
+  title: 'Development Feasibility & Advisory Services | Sunshine Coast',
   description:
     'Development feasibility reports, pre-development management, and development partnership services on the Sunshine Coast. Planning, architecture, and financial analysis integrated into one assessment.',
   keywords: [
@@ -139,9 +139,9 @@ export default function ServicesPage() {
             </FadeIn>
             <FadeIn delay={0.1}>
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white leading-[1.1] mb-6">
-                Clarity before capital.
+                Development feasibility
                 <br />
-                <span className="text-white/60">Confidence before commitment.</span>
+                <span className="text-white/60">and advisory services</span>
               </h1>
             </FadeIn>
             <FadeIn delay={0.2}>

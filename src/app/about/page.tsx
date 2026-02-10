@@ -6,7 +6,7 @@ import FadeIn from '@/components/ui/FadeIn';
 import ContactCTA from '@/components/sections/ContactCTA';
 
 export const metadata: Metadata = {
-  title: 'About Us | Development Intelligence Specialists | Sunshine Coast',
+  title: 'About Us | Sunshine Coast Development Specialists',
   description:
     'Casa Intelligence combines deep local expertise with proprietary data analysis to deliver development feasibility and advisory services across the Sunshine Coast and South East Queensland.',
   keywords: [
@@ -73,9 +73,9 @@ export default function AboutPage() {
             </FadeIn>
             <FadeIn delay={0.1}>
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white leading-[1.1] mb-6">
-                Where deep expertise
+                Sunshine Coast development
                 <br />
-                <span className="text-white/60">meets proprietary intelligence</span>
+                <span className="text-white/60">intelligence specialists</span>
               </h1>
             </FadeIn>
             <FadeIn delay={0.2}>

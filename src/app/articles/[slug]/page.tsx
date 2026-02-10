@@ -7,7 +7,7 @@ import ArticleSignature from '@/components/brand/ArticleSignature';
 import { articles, getArticleBySlug } from '@/lib/articles';
 import { articleContent } from '@/lib/article-content';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Clock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronRight, Clock } from 'lucide-react';
 
 interface PageProps {
   params: { slug: string };
@@ -25,12 +25,16 @@ export function generateMetadata({ params }: PageProps): Metadata {
     title: article.title,
     description: article.description,
     keywords: article.keywords,
+    alternates: {
+      canonical: `https://casaintelligence.com.au/articles/${article.slug}`,
+    },
     openGraph: {
       title: article.title,
       description: article.description,
       type: 'article',
       publishedTime: article.date,
       authors: [article.author],
+      url: `https://casaintelligence.com.au/articles/${article.slug}`,
     },
   };
 }
@@ -142,6 +146,7 @@ export default function ArticlePage({ params }: PageProps) {
     headline: article.title,
     description: article.description,
     datePublished: article.date,
+    dateModified: article.date,
     author: {
       '@type': 'Person',
       name: article.author,
@@ -199,13 +204,19 @@ export default function ArticlePage({ params }: PageProps) {
         <Container variant="wide">
           <div className="max-w-3xl mx-auto">
             <FadeIn>
-              <Link
-                href="/articles"
-                className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors mb-8"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                All articles
-              </Link>
+              <nav aria-label="Breadcrumb" className="mb-8">
+                <ol className="flex items-center gap-1.5 text-sm text-white/40">
+                  <li>
+                    <Link href="/" className="hover:text-white/70 transition-colors">Home</Link>
+                  </li>
+                  <li><ChevronRight className="w-3 h-3" /></li>
+                  <li>
+                    <Link href="/articles" className="hover:text-white/70 transition-colors">Articles</Link>
+                  </li>
+                  <li><ChevronRight className="w-3 h-3" /></li>
+                  <li className="text-white/60 truncate max-w-[200px] sm:max-w-none">{article.title}</li>
+                </ol>
+              </nav>
             </FadeIn>
             <FadeIn delay={0.1}>
               <div className="flex items-center gap-3 mb-4">

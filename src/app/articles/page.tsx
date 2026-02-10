@@ -18,11 +18,15 @@ export const metadata: Metadata = {
     'sunshine coast property intelligence',
     'development feasibility queensland',
   ],
+  alternates: {
+    canonical: 'https://casaintelligence.com.au/articles',
+  },
   openGraph: {
     title: 'Articles | Development Intelligence for Queensland',
     description:
       'Insights on property development feasibility, planning intelligence, and market analysis for the Sunshine Coast.',
     type: 'website',
+    url: 'https://casaintelligence.com.au/articles',
   },
 };
 

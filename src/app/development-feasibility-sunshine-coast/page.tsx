@@ -8,8 +8,7 @@ import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Clock } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title:
-    'Development Feasibility Reports | Sunshine Coast | From $8,000 | Casa Intelligence',
+  title: 'Development Feasibility Reports | Sunshine Coast | $8,000',
   description:
     'Professional development feasibility reports for the Sunshine Coast from $8,000. Planning, architecture, and financial analysis integrated into one assessment. Delivered in 5-7 business days.',
   keywords: [

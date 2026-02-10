@@ -5,6 +5,11 @@ import FadeIn from '@/components/ui/FadeIn';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
+  description:
+    'Terms of service for Casa Intelligence. Conditions governing the use of our website and development advisory services.',
+  alternates: {
+    canonical: 'https://casaintelligence.com.au/terms',
+  },
 };
 
 export default function TermsPage() {

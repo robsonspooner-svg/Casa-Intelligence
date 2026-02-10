@@ -8,9 +8,32 @@ import { articles } from '@/lib/articles';
 import Link from 'next/link';
 import { ArrowRight, Clock, MapPin } from 'lucide-react';
 
+const serviceJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'Casa Intelligence — Queensland Property Development',
+  url: 'https://casaintelligence.com.au/queensland-property-development',
+  description:
+    'Development feasibility and advisory services for South East Queensland. Data-driven site assessment, planning analysis, and pre-development management.',
+  areaServed: {
+    '@type': 'AdministrativeArea',
+    name: 'South East Queensland',
+  },
+  serviceType: [
+    'Development Feasibility Reports',
+    'Pre-Development Advisory',
+    'Planning Assessment',
+    'Property Development Consulting',
+  ],
+  provider: {
+    '@type': 'Organization',
+    name: 'Casa Intelligence',
+    url: 'https://casaintelligence.com.au',
+  },
+};
+
 export const metadata: Metadata = {
-  title:
-    'Queensland Property Development | Feasibility & Advisory | Casa Intelligence',
+  title: 'Queensland Property Development Feasibility & Advisory',
   description:
     'Development feasibility and advisory services for South East Queensland. Data-driven site assessment, planning analysis, and pre-development management for the Sunshine Coast and SEQ corridor.',
   keywords: [
@@ -81,6 +104,10 @@ export default function QueenslandPropertyDevelopmentPage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
+      />
       {/* Hero */}
       <section className="gradient-hero pt-32 pb-20 md:pt-40 md:pb-28">
         <Container variant="wide">

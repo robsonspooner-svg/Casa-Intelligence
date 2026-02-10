@@ -5,6 +5,11 @@ import FadeIn from '@/components/ui/FadeIn';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
+  description:
+    'Privacy policy for Casa Intelligence. How we collect, use, and protect your personal information under Australian Privacy Act 1988.',
+  alternates: {
+    canonical: 'https://casaintelligence.com.au/privacy',
+  },
 };
 
 export default function PrivacyPage() {

@@ -27,7 +27,7 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   metadataBase: new URL('https://casaintelligence.com.au'),
   title: {
-    default: 'Casa Intelligence | Development Feasibility & Advisory | Sunshine Coast',
+    default: 'Casa Intelligence | Development Feasibility | Sunshine Coast',
     template: '%s | Casa Intelligence',
   },
   description:
@@ -125,7 +125,6 @@ const jsonLd = {
   description:
     'Proprietary development intelligence for South East Queensland. Data-driven feasibility analysis, planning assessment, and pre-development advisory for the Sunshine Coast.',
   url: 'https://casaintelligence.com.au',
-  telephone: '+61400000000',
   email: 'hello@casaintelligence.com.au',
   address: {
     '@type': 'PostalAddress',
@@ -163,7 +162,11 @@ const jsonLd = {
     'Development overlays',
     'Zoning analysis',
   ],
-  sameAs: [],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'hello@casaintelligence.com.au',
+    contactType: 'customer service',
+  },
 };
 
 export default function RootLayout({
@@ -172,7 +175,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${dmSerif.variable} ${cormorant.variable}`}>
+    <html lang="en-AU" className={`${inter.variable} ${dmSerif.variable} ${cormorant.variable}`}>
       <head>
         <script
           type="application/ld+json"

@@ -17,9 +17,32 @@ import {
   TrendingUp,
 } from 'lucide-react';
 
+const serviceJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'Casa Intelligence — Sunshine Coast Development',
+  url: 'https://casaintelligence.com.au/sunshine-coast-development',
+  description:
+    'Development feasibility reports, planning assessment, and pre-development advisory for the Sunshine Coast. From $8,000 in 5-7 business days.',
+  areaServed: {
+    '@type': 'AdministrativeArea',
+    name: 'Sunshine Coast, Queensland',
+  },
+  serviceType: [
+    'Development Feasibility Reports',
+    'Planning Assessment',
+    'Pre-Development Advisory',
+    'Site Feasibility Analysis',
+  ],
+  provider: {
+    '@type': 'Organization',
+    name: 'Casa Intelligence',
+    url: 'https://casaintelligence.com.au',
+  },
+};
+
 export const metadata: Metadata = {
-  title:
-    'Sunshine Coast Development | Feasibility, Planning & Advisory | Casa Intelligence',
+  title: 'Sunshine Coast Development Feasibility & Advisory',
   description:
     'Expert development intelligence for the Sunshine Coast. Feasibility reports, planning assessment, overlay analysis, and pre-development advisory. Data-driven insights from $8,000 in 5-7 days.',
   keywords: [
@@ -91,6 +114,10 @@ export default function SunshineCoastDevelopmentPage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
+      />
       {/* Hero */}
       <section className="gradient-hero pt-32 pb-20 md:pt-40 md:pb-28">
         <Container variant="wide">
