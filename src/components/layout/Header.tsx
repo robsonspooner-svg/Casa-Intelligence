@@ -1,5 +1,6 @@
 'use client';
 
+import Logo from '@/components/brand/Logo';
 import { cn } from '@/lib/utils';
 import { Menu, Phone, X } from 'lucide-react';
 import Link from 'next/link';
@@ -9,6 +10,8 @@ import { useEffect, useState } from 'react';
 const navigation = [
   { name: 'Home', href: '/' },
   { name: 'Services', href: '/services' },
+  { name: 'Site Analyser', href: '/site-analyser' },
+  { name: 'Articles', href: '/articles' },
   { name: 'About', href: '/about' },
   { name: 'Contact', href: '/contact' },
 ];
@@ -37,32 +40,14 @@ export default function Header() {
           : 'bg-transparent'
       )}
     >
-      <div className="mx-auto max-w-7xl px-6 md:px-8">
+      <div className="mx-auto max-w-[1600px] px-6 md:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg gradient-navy flex items-center justify-center">
-              <span className="text-white font-serif text-sm font-bold">C</span>
-            </div>
-            <div className="flex flex-col">
-              <span
-                className={cn(
-                  'font-serif text-lg leading-none transition-colors',
-                  isScrolled ? 'text-casa-navy' : 'text-white'
-                )}
-              >
-                Casa Intelligence
-              </span>
-              <span
-                className={cn(
-                  'text-[10px] tracking-[0.2em] uppercase transition-colors',
-                  isScrolled ? 'text-text-tertiary' : 'text-white/50'
-                )}
-              >
-                Development Advisory
-              </span>
-            </div>
-          </Link>
+          <Logo
+            variant={isScrolled ? 'dark' : 'light'}
+            size="sm"
+            showSubtext={false}
+          />
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">

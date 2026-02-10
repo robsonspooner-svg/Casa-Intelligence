@@ -34,11 +34,11 @@ const founders = [
 export default function Team() {
   return (
     <section className="section-padding bg-surface">
-      <Container>
+      <Container variant="wide">
         <SectionHeading
           badge="Our Team"
           title="Built by people who know property"
-          subtitle="Casa Intelligence combines deep sales expertise with technical capability — a rare combination in development advisory."
+          subtitle="Deep local expertise amplified by proprietary intelligence. A combination no other advisory firm can replicate."
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">

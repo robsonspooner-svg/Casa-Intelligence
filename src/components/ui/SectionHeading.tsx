@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils';
 
 interface SectionHeadingProps {
-  badge?: string;
-  title: string;
-  subtitle?: string;
+  badge?: React.ReactNode;
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
   align?: 'left' | 'center';
   light?: boolean;
 }

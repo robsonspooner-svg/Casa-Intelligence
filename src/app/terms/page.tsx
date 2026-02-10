@@ -1,3 +1,4 @@
+import Brand from '@/components/brand/Brand';
 import { Metadata } from 'next';
 import Container from '@/components/layout/Container';
 import FadeIn from '@/components/ui/FadeIn';
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <section className="pt-32 pb-20 md:pt-40 md:pb-28 bg-canvas">
-      <Container>
+      <Container variant="wide">
         <FadeIn>
           <div className="max-w-3xl mx-auto">
             <h1 className="font-serif text-3xl md:text-4xl mb-8">Terms of Service</h1>
@@ -19,7 +20,7 @@ export default function TermsPage() {
 
               <h2 className="font-serif text-xl text-text-primary mt-8">1. Services</h2>
               <p>
-                Casa Intelligence Pty Ltd provides development feasibility reports,
+                <Brand>Casa Intelligence</Brand> Pty Ltd provides development feasibility reports,
                 pre-development management services, and development advisory services.
                 All services are subject to a separate engagement agreement.
               </p>
@@ -42,7 +43,7 @@ export default function TermsPage() {
 
               <h2 className="font-serif text-xl text-text-primary mt-8">4. Limitation of Liability</h2>
               <p>
-                To the maximum extent permitted by law, Casa Intelligence Pty Ltd shall
+                To the maximum extent permitted by law, <Brand>Casa Intelligence</Brand> Pty Ltd shall
                 not be liable for any indirect, incidental, special, or consequential
                 damages arising out of or in connection with the use of this website or
                 our services.
@@ -51,7 +52,7 @@ export default function TermsPage() {
               <h2 className="font-serif text-xl text-text-primary mt-8">5. Intellectual Property</h2>
               <p>
                 All content on this website, including text, graphics, logos, and images,
-                is the property of Casa Intelligence Pty Ltd and is protected by
+                is the property of <Brand>Casa Intelligence</Brand> Pty Ltd and is protected by
                 Australian and international intellectual property laws.
               </p>
 

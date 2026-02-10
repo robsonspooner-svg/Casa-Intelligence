@@ -1,3 +1,5 @@
+import Brand from '@/components/brand/Brand';
+import Logo from '@/components/brand/Logo';
 import { Mail, MapPin, Phone } from 'lucide-react';
 import Link from 'next/link';
 import Container from './Container';
@@ -7,12 +9,19 @@ const footerLinks = {
     { name: 'Feasibility Reports', href: '/services#feasibility' },
     { name: 'Pre-Development Management', href: '/services#management' },
     { name: 'Proprietary Development', href: '/services#development' },
+    { name: 'Free Site Analyser', href: '/site-analyser' },
   ],
   company: [
     { name: 'About Us', href: '/about' },
+    { name: 'Articles', href: '/articles' },
     { name: 'Contact', href: '/contact' },
     { name: 'Privacy Policy', href: '/privacy' },
     { name: 'Terms of Service', href: '/terms' },
+  ],
+  regions: [
+    { name: 'Sunshine Coast Development', href: '/sunshine-coast-development' },
+    { name: 'Development Feasibility', href: '/development-feasibility-sunshine-coast' },
+    { name: 'Queensland Development', href: '/queensland-property-development' },
   ],
 };
 
@@ -20,18 +29,15 @@ export default function Footer() {
   return (
     <footer className="bg-casa-navy-dark text-white/70">
       <Container className="py-16 md:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                <span className="text-white font-serif text-sm font-bold">C</span>
-              </div>
-              <span className="font-serif text-lg text-white">Casa Intelligence</span>
+            <div className="mb-4">
+              <Logo variant="light" size="sm" showSubtext={false} />
             </div>
             <p className="text-sm leading-relaxed mb-6">
-              Development intelligence and advisory for the Sunshine Coast.
-              Planning, architecture, and financial feasibility in one integrated report.
+              Proprietary development intelligence for South East Queensland.
+              Data-driven analysis that gives you an edge.
             </p>
             <div className="space-y-3 text-sm">
               <a
@@ -93,6 +99,25 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Regions */}
+          <div>
+            <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">
+              Regions
+            </h3>
+            <ul className="space-y-3">
+              {footerLinks.regions.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-sm hover:text-white transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* Get Started */}
           <div>
             <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">
@@ -113,7 +138,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-white/40">
-            &copy; {new Date().getFullYear()} Casa Intelligence Pty Ltd. All rights reserved.
+            &copy; {new Date().getFullYear()} <Brand>Casa Intelligence</Brand> Pty Ltd. All rights reserved.
           </p>
           <p className="text-xs text-white/40">
             Part of Casa Group

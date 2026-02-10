@@ -1,3 +1,4 @@
+import Brand from '@/components/brand/Brand';
 import { Metadata } from 'next';
 import Container from '@/components/layout/Container';
 import FadeIn from '@/components/ui/FadeIn';
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <section className="pt-32 pb-20 md:pt-40 md:pb-28 bg-canvas">
-      <Container>
+      <Container variant="wide">
         <FadeIn>
           <div className="max-w-3xl mx-auto">
             <h1 className="font-serif text-3xl md:text-4xl mb-8">Privacy Policy</h1>
@@ -19,7 +20,7 @@ export default function PrivacyPage() {
 
               <h2 className="font-serif text-xl text-text-primary mt-8">1. Information We Collect</h2>
               <p>
-                Casa Intelligence Pty Ltd (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;) collects personal information
+                <Brand>Casa Intelligence</Brand> Pty Ltd (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;) collects personal information
                 that you voluntarily provide when you contact us through our website,
                 including your name, email address, phone number, and property address.
               </p>

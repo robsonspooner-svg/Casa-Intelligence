@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
         from: 'Casa Intelligence <notifications@casaintelligence.com.au>',
         to: ['hello@casaintelligence.com.au'],
         reply_to: email,
-        subject: `New Enquiry from ${name}${address ? ` — ${address}` : ''}`,
+        subject: `New Enquiry from ${name}${address ? ` | ${address}` : ''}`,
         html: `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #1B1464;">New Website Enquiry</h2>

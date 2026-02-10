@@ -47,8 +47,12 @@ export default function ContactCTA() {
   }
 
   return (
-    <section className="section-padding gradient-navy" id="contact">
-      <Container>
+    <section className="section-padding gradient-navy relative overflow-hidden" id="contact">
+      {/* Watermark C */}
+      <div className="absolute -top-20 -left-10 text-[240px] font-logo font-medium text-white opacity-[0.025] leading-none select-none pointer-events-none" aria-hidden="true">
+        C
+      </div>
+      <Container variant="wide" className="relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
           {/* Left: Form */}
           <FadeIn direction="left">
@@ -61,7 +65,7 @@ export default function ContactCTA() {
               </h2>
               <p className="text-white/50 mb-8 leading-relaxed">
                 Tell us about your property. We&apos;ll give you an honest assessment of
-                whether a feasibility study is worthwhile — no obligation.
+                whether a feasibility study is worthwhile, no obligation.
               </p>
 
               {formState === 'success' ? (

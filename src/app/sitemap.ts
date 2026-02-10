@@ -1,9 +1,10 @@
 import { MetadataRoute } from 'next';
+import { articles } from '@/lib/articles';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://casaintelligence.com.au';
 
-  return [
+  const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -15,6 +16,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/site-analyser`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/articles`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.85,
     },
     {
       url: `${baseUrl}/about`,
@@ -29,6 +42,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/sunshine-coast-development`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/development-feasibility-sunshine-coast`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/queensland-property-development`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.85,
+    },
+    {
       url: `${baseUrl}/privacy`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
@@ -41,4 +72,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.3,
     },
   ];
+
+  const articlePages: MetadataRoute.Sitemap = articles.map((article) => ({
+    url: `${baseUrl}/articles/${article.slug}`,
+    lastModified: new Date(article.date),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...articlePages];
 }

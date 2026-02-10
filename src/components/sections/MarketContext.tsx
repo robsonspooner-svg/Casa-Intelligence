@@ -1,46 +1,48 @@
 'use client';
 
+import Brand from '@/components/brand/Brand';
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import FadeIn from '@/components/ui/FadeIn';
 import SectionHeading from '@/components/ui/SectionHeading';
 import Container from '@/components/layout/Container';
+import { AlertTriangle } from 'lucide-react';
 
 const stats = [
   {
     value: 84800,
     suffix: '',
-    label: 'New dwellings needed',
+    label: 'New dwellings required',
     detail: 'Sunshine Coast by 2046',
   },
   {
     value: 60,
     suffix: '%',
-    label: 'Infill development target',
-    detail: 'Of new housing must be infill',
+    label: 'Must be infill development',
+    detail: 'Existing urban sites to be redeveloped',
   },
   {
     value: 76,
     suffix: '%',
-    label: 'Price growth (5 years)',
-    detail: 'Median house price increase',
+    label: 'Price growth in 5 years',
+    detail: 'Land values rising faster than builds',
   },
   {
     value: 1.08,
     suffix: 'M',
     prefix: '$',
     label: 'Median house price',
-    detail: 'Sunshine Coast 2025',
+    detail: 'And climbing. Development demand is real',
   },
 ];
 
 export default function MarketContext() {
   return (
     <section className="section-padding bg-canvas">
-      <Container>
+      <Container variant="wide">
         <SectionHeading
-          badge="The Opportunity"
-          title="South East Queensland is booming"
-          subtitle="The Sunshine Coast must deliver tens of thousands of new dwellings over the next two decades. A new planning scheme has unlocked development potential across the region."
+          badge={<>Market <Brand>Intelligence</Brand></>}
+          title="This opportunity won't last forever"
+          subtitle={<>Our market <Brand>intelligence</Brand> system tracks these dynamics in real-time so you can act on data, not speculation. Planning windows close, land values rise, and the developers who move on <Brand>intelligence</Brand> capture the best margins.</>}
         />
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 max-w-5xl mx-auto mb-16">
@@ -64,13 +66,25 @@ export default function MarketContext() {
         </div>
 
         <FadeIn>
-          <div className="max-w-3xl mx-auto text-center">
-            <p className="text-text-secondary leading-relaxed">
-              The convergence of population growth, planning reform, and supply constraints
-              has created one of the most active development markets in Australia. Casa
-              Intelligence exists to help landowners and developers navigate this opportunity
-              with clarity and confidence.
-            </p>
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-warm border border-gold/20 rounded-card p-6 md:p-8">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-5 h-5 text-gold" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-text-primary mb-2">
+                    What our data shows about inaction
+                  </h3>
+                  <p className="text-sm text-text-secondary leading-relaxed">
+                    Every month you delay, land prices increase, construction costs rise,
+                    and competing developers lock in the best sites. A feasibility assessment
+                    today gives you the intelligence to act decisively, or to avoid a costly
+                    mistake. Either way, you&apos;re better off knowing.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </FadeIn>
       </Container>

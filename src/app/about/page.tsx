@@ -1,13 +1,33 @@
 import { Metadata } from 'next';
+import Brand from '@/components/brand/Brand';
 import Container from '@/components/layout/Container';
 import SectionHeading from '@/components/ui/SectionHeading';
 import FadeIn from '@/components/ui/FadeIn';
 import ContactCTA from '@/components/sections/ContactCTA';
 
 export const metadata: Metadata = {
-  title: 'About Us',
+  title: 'About Us | Development Intelligence Specialists | Sunshine Coast',
   description:
-    'Casa Intelligence combines deep sales expertise with technical capability to deliver development feasibility and advisory services on the Sunshine Coast.',
+    'Casa Intelligence combines deep local expertise with proprietary data analysis to deliver development feasibility and advisory services across the Sunshine Coast and South East Queensland.',
+  keywords: [
+    'development intelligence sunshine coast',
+    'property development specialists queensland',
+    'sunshine coast development advisory',
+    'development feasibility consultants',
+    'SEQ property development team',
+    'sunshine coast property experts',
+    'development advisory firm queensland',
+  ],
+  alternates: {
+    canonical: 'https://casaintelligence.com.au/about',
+  },
+  openGraph: {
+    title: 'About Casa Intelligence | Development Intelligence Specialists',
+    description:
+      'Deep Sunshine Coast expertise combined with proprietary data analysis. Development feasibility and advisory for SEQ.',
+    type: 'website',
+    url: 'https://casaintelligence.com.au/about',
+  },
 };
 
 const founders = [
@@ -29,7 +49,7 @@ const founders = [
     name: 'Robert Spooner',
     role: 'Co-Founder & Director',
     focus: 'Product, Intelligence & Technical Analysis',
-    bio: 'Robert brings rare technical depth to development advisory. With a Master of Architecture and intimate knowledge of Sunshine Coast construction costs and timelines, he produces the kind of integrated analysis — planning, architecture, and financial modelling — that normally requires three separate consultants. His ability to combine these disciplines into one cohesive deliverable is Casa Intelligence\'s core technical advantage.',
+    bio: 'Robert brings rare technical depth to development advisory. With a Master of Architecture and intimate knowledge of Sunshine Coast construction costs and timelines, he produces the kind of integrated analysis (planning, architecture, and financial modelling) that normally requires three separate consultants. His ability to combine these disciplines into one cohesive deliverable is Casa Intelligence\'s core technical advantage.',
     credentials: [
       'Master of Architecture',
       'Planning, architectural, and financial feasibility specialist',
@@ -44,7 +64,7 @@ export default function AboutPage() {
     <>
       {/* Hero */}
       <section className="gradient-hero pt-32 pb-20 md:pt-40 md:pb-28">
-        <Container>
+        <Container variant="wide">
           <div className="max-w-3xl">
             <FadeIn>
               <span className="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-white/40 mb-4">
@@ -53,17 +73,17 @@ export default function AboutPage() {
             </FadeIn>
             <FadeIn delay={0.1}>
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white leading-[1.1] mb-6">
-                Built by people who
+                Where deep expertise
                 <br />
-                <span className="text-white/60">know property</span>
+                <span className="text-white/60">meets proprietary intelligence</span>
               </h1>
             </FadeIn>
             <FadeIn delay={0.2}>
               <p className="text-lg md:text-xl text-white/50 leading-relaxed max-w-2xl">
-                Casa Intelligence was founded on a simple observation: the gap between
+                <Brand>Casa Intelligence</Brand> was founded on a simple observation: the gap between
                 a landowner who doesn&apos;t know their site&apos;s potential and a developer who needs
-                viable sites is where the most value is created — and where the least
-                expertise currently exists.
+                viable sites is where the most value is created, and where the least
+                intelligence currently exists. We built the technology to close that gap.
               </p>
             </FadeIn>
           </div>
@@ -72,13 +92,13 @@ export default function AboutPage() {
 
       {/* Vision */}
       <section className="section-padding bg-canvas">
-        <Container>
+        <Container variant="wide">
           <div className="max-w-3xl mx-auto">
             <FadeIn>
               <SectionHeading
                 badge="Our Vision"
                 title="Intelligence that moves markets"
-                subtitle="We believe every property decision should be informed by deep, integrated analysis — not guesswork, not gut feel, and not the fragmented advice of three separate consultants who never talk to each other."
+                subtitle="We believe every property decision should be informed by deep, integrated analysis. Not guesswork, not gut feel, and not the fragmented advice of three separate consultants who never talk to each other."
                 align="center"
               />
             </FadeIn>
@@ -87,20 +107,22 @@ export default function AboutPage() {
                 <p>
                   Traditional feasibility assessment is broken. A landowner considering
                   development must separately engage a town planner, an architect, and a
-                  quantity surveyor — spending $30,000 to $50,000 over four to eight weeks
+                  quantity surveyor, spending $30,000 to $50,000 over four to eight weeks
                   just to understand whether their site has potential.
                 </p>
                 <p>
-                  Casa Intelligence solves this by bringing all three disciplines together
-                  in one report, delivered in five to seven business days, for a fraction
-                  of the cost. We don&apos;t just tell you what your site can do — we tell you
-                  whether it should, and what the numbers look like if it does.
+                  <Brand>Casa Intelligence</Brand> built a proprietary intelligence engine that brings all three
+                  disciplines together, continuously ingesting planning data, market
+                  transactions, construction costs, and council decision patterns. The
+                  result is a single, integrated assessment delivered in five to seven
+                  business days, for a fraction of the cost.
                 </p>
                 <p>
-                  Based on the Sunshine Coast, we have deep local knowledge of council
-                  requirements, construction costs, market dynamics, and the planning
-                  changes reshaping the region. This isn&apos;t generic advice from interstate —
-                  this is intelligence built from the ground up.
+                  This isn&apos;t just integration. It&apos;s intelligence. Our system learns
+                  from every assessment, every council outcome, every market shift. The
+                  result is analysis that gets more accurate over time. Based on the
+                  Sunshine Coast, we have deep local knowledge that no interstate firm
+                  and no generic model can replicate.
                 </p>
               </div>
             </FadeIn>
@@ -110,7 +132,7 @@ export default function AboutPage() {
 
       {/* Team */}
       <section className="section-padding bg-surface">
-        <Container>
+        <Container variant="wide">
           <SectionHeading
             badge="Our Team"
             title="Complementary expertise"
@@ -159,28 +181,28 @@ export default function AboutPage() {
 
       {/* Approach */}
       <section className="section-padding bg-canvas">
-        <Container>
+        <Container variant="wide">
           <div className="max-w-3xl mx-auto text-center">
             <FadeIn>
               <SectionHeading
                 badge="Our Approach"
-                title="Integrated, not fragmented"
+                title="Technology-amplified expertise"
               />
             </FadeIn>
             <FadeIn delay={0.1}>
               <div className="text-text-secondary leading-relaxed space-y-6">
                 <p>
-                  Most advisory firms specialise in one discipline. Planners understand
-                  zoning but not construction costs. Architects understand building design
-                  but not market pricing. Quantity surveyors understand costs but not
-                  planning constraints.
+                  Most firms rely on experience alone. We built a proprietary analytical
+                  engine that processes hundreds of data points per site assessment,
+                  then apply deep local expertise to produce insights no other firm can
+                  replicate.
                 </p>
                 <p>
-                  Casa Intelligence integrates all three. When we assess a site, the
-                  planning analysis informs the architectural yield study, which informs
-                  the financial model. The result is a feasibility report that is genuinely
-                  useful for decision-making — not a stack of disconnected PDF reports from
-                  consultants who never spoke to each other.
+                  When we assess a site, our engine has already cross-referenced the
+                  planning provisions, overlay interactions, comparable transactions, and
+                  construction cost benchmarks. Our analysts then apply the local knowledge
+                  that data alone can&apos;t capture: council tendencies, market timing,
+                  design nuances. The result is intelligence that is genuinely decisive.
                 </p>
               </div>
             </FadeIn>

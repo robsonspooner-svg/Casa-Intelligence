@@ -31,6 +31,7 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
         serif: ['var(--font-dm-serif)', 'Georgia', 'serif'],
+        logo: ['var(--font-cormorant)', 'Georgia', 'serif'],
       },
       borderRadius: {
         card: '16px',
