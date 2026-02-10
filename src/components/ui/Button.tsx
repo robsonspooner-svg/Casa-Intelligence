@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 import { forwardRef } from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -31,12 +32,21 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       lg: 'text-base px-8 py-4 gap-2.5',
     };
 
+    const classes = cn(baseStyles, variants[variant], sizes[size], className);
+
     if (href) {
+      // Use Next.js Link for internal routes (prefetching + client-side nav)
+      // Use plain <a> for external URLs and tel:/mailto: links
+      const isInternal = href.startsWith('/');
+      if (isInternal) {
+        return (
+          <Link href={href} className={classes} prefetch={true}>
+            {children}
+          </Link>
+        );
+      }
       return (
-        <a
-          href={href}
-          className={cn(baseStyles, variants[variant], sizes[size], className)}
-        >
+        <a href={href} className={classes}>
           {children}
         </a>
       );
@@ -45,7 +55,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={cn(baseStyles, variants[variant], sizes[size], className)}
+        className={classes}
         {...props}
       >
         {children}

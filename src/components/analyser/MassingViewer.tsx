@@ -685,18 +685,19 @@ function AutoFitCamera({ parcelGeometry, centroid }: { parcelGeometry: GeoJSON.G
   return null;
 }
 
-function PlanViewCamera({ parcelGeometry, centroid }: { parcelGeometry: GeoJSON.Geometry | null; centroid?: { lng: number; lat: number } }) {
+function PlanViewCamera({ parcelGeometry, centroid, zoom }: { parcelGeometry: GeoJSON.Geometry | null; centroid?: { lng: number; lat: number }; zoom: number }) {
   const { camera } = useThree();
   useEffect(() => {
-    let dist = 60;
-    if (parcelGeometry) {
-      const local = geoToLocal(parcelGeometry, centroid);
-      dist = Math.max(local.width, local.depth) * 1.2;
-    }
-    camera.position.set(0, dist, 0);
+    // Position directly above looking straight down
+    camera.position.set(0, 200, 0);
+    camera.up.set(0, 0, -1); // Z-axis points "up" on screen for proper north orientation
     camera.lookAt(0, 0, 0);
+    // Set zoom for orthographic camera
+    if ('zoom' in camera) {
+      (camera as THREE.OrthographicCamera).zoom = zoom;
+    }
     camera.updateProjectionMatrix();
-  }, [camera, parcelGeometry, centroid]);
+  }, [camera, parcelGeometry, centroid, zoom]);
   return null;
 }
 
@@ -794,11 +795,11 @@ export default function MassingViewer({ params, parcelGeometry, maxHeight, maxRe
             <OrbitControls enablePan enableZoom enableRotate maxPolarAngle={Math.PI / 2 - 0.05} minDistance={10} maxDistance={200} />
           </Canvas>
         ) : (
-          <Canvas orthographic camera={{ zoom: orthoZoom, position: [0, 100, 0], near: 0.1, far: 500 }} gl={{ antialias: true, alpha: true }}>
+          <Canvas orthographic camera={{ zoom: orthoZoom, position: [0, 200, 0], up: [0, 0, -1], near: 0.1, far: 500 }} gl={{ antialias: true, alpha: true }}>
             <color attach="background" args={['#f8f7f5']} />
             <ambientLight intensity={0.7} />
             <directionalLight position={[0, 50, 0]} intensity={0.8} />
-            <PlanViewCamera parcelGeometry={parcelGeometry} centroid={cObj} />
+            <PlanViewCamera parcelGeometry={parcelGeometry} centroid={cObj} zoom={orthoZoom} />
             <GroundGrid />
             <ParcelGround geometry={parcelGeometry} centroid={cObj} />
             <ParcelOutline geometry={parcelGeometry} centroid={cObj} />
