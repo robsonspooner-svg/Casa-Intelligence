@@ -670,18 +670,19 @@ function GroundGrid() {
 
 function AutoFitCamera({ parcelGeometry, centroid }: { parcelGeometry: GeoJSON.Geometry | null; centroid?: { lng: number; lat: number } }) {
   const { camera } = useThree();
-  const hasAdjusted = useRef(false);
   useEffect(() => {
-    if (hasAdjusted.current) return;
-    hasAdjusted.current = true;
     let dist = 60;
     if (parcelGeometry) {
       const local = geoToLocal(parcelGeometry, centroid);
       dist = Math.max(local.width, local.depth) * 1.5;
     }
+    // Always reset to a clean 3D perspective position
     camera.position.set(dist * 0.6, dist * 0.5, dist * 0.6);
+    camera.up.set(0, 1, 0); // Ensure Y-up orientation for 3D view
     camera.lookAt(0, 0, 0);
-  }, [camera, parcelGeometry, centroid]);
+    camera.updateProjectionMatrix();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only on mount — runs fresh each time 3D canvas remounts
   return null;
 }
 
@@ -775,11 +776,11 @@ export default function MassingViewer({ params, parcelGeometry, maxHeight, maxRe
 
       <div className="bg-[#f8f7f5] rounded-xl border border-border/50 overflow-hidden relative flex-1 min-h-[300px]">
         {viewMode === '3d' ? (
-          <Canvas shadows camera={{ position: [40, 30, 40], fov: 45, near: 0.1, far: 1000 }} gl={{ antialias: true, alpha: true }}>
+          <Canvas shadows camera={{ position: [40, 30, 40], fov: 45, near: 0.1, far: 2000 }} gl={{ antialias: true, alpha: true }}>
             <color attach="background" args={['#f8f7f5']} />
-            <fog attach="fog" args={['#f8f7f5', 80, 200]} />
+            <fog attach="fog" args={['#f8f7f5', 300, 600]} />
             <ambientLight intensity={0.5} />
-            <directionalLight position={[30, 40, 20]} intensity={1.2} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} shadow-camera-far={200} shadow-camera-left={-60} shadow-camera-right={60} shadow-camera-top={60} shadow-camera-bottom={-60} />
+            <directionalLight position={[60, 80, 40]} intensity={1.2} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} shadow-camera-far={400} shadow-camera-left={-120} shadow-camera-right={120} shadow-camera-top={120} shadow-camera-bottom={-120} />
             <AutoFitCamera parcelGeometry={parcelGeometry} centroid={cObj} />
             <GroundGrid />
             <ParcelGround geometry={parcelGeometry} centroid={cObj} />
@@ -792,7 +793,7 @@ export default function MassingViewer({ params, parcelGeometry, maxHeight, maxRe
               <HeightRuler maxHeight={maxHeight} parcelGeometry={parcelGeometry} buildingHeight={buildingHeight} centroid={cObj} />
             )}
             <ContactShadows position={[0, -0.01, 0]} opacity={0.3} scale={100} blur={2} far={40} />
-            <OrbitControls enablePan enableZoom enableRotate maxPolarAngle={Math.PI / 2 - 0.05} minDistance={10} maxDistance={200} />
+            <OrbitControls enablePan enableZoom enableRotate maxPolarAngle={Math.PI / 2 - 0.05} minDistance={5} maxDistance={500} />
           </Canvas>
         ) : (
           <Canvas orthographic camera={{ zoom: orthoZoom, position: [0, 200, 0], up: [0, 0, -1], near: 0.1, far: 500 }} gl={{ antialias: true, alpha: true }}>
