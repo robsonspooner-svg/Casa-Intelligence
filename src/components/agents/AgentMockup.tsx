@@ -172,99 +172,176 @@ function CountUp({ value, prefix = '', suffix = '', duration = 800 }: {
 
 function ParcelGraphic({ lots, phase }: { lots: number; phase: AnalysisPhase }) {
   const showSplit = phase === 'done' && lots >= 2;
+
+  // Lot positions for 2/3/4-lot layouts (battle-axe style for 2, mixed for 3+)
+  const lotPolygons: { points: string; label: { x: number; y: number } }[] = (() => {
+    if (lots === 2) return [
+      { points: '30,18 118,18 118,58 30,58', label: { x: 74, y: 40 } },
+      { points: '30,58 118,58 118,92 135,92 135,18 118,18 118,58 30,58 30,92 118,92 135,92 135,18', label: { x: 74, y: 77 } },
+    ];
+    if (lots === 3) return [
+      { points: '30,18 74,18 74,58 30,58', label: { x: 52, y: 40 } },
+      { points: '74,18 118,18 118,58 74,58', label: { x: 96, y: 40 } },
+      { points: '30,58 135,58 135,92 30,92', label: { x: 82, y: 77 } },
+    ];
+    return [
+      { points: '30,18 74,18 74,55 30,55', label: { x: 52, y: 38 } },
+      { points: '74,18 118,18 118,55 74,55', label: { x: 96, y: 38 } },
+      { points: '30,55 74,55 74,92 30,92', label: { x: 52, y: 75 } },
+      { points: '74,55 135,55 135,92 74,92', label: { x: 104, y: 75 } },
+    ];
+  })();
+
+  const lotColors = ['#1B1464', '#16a34a', '#0ea5e9', '#f59e0b'];
+
   return (
-    <div className="relative w-full h-32 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 overflow-hidden">
-      {/* Parcel outline */}
-      <svg viewBox="0 0 200 100" className="w-full h-full" preserveAspectRatio="none">
-        {/* Base parcel */}
-        <motion.rect
-          x="10" y="10" width="180" height="80"
-          rx="4" ry="4"
+    <div className="relative w-full h-32 rounded-lg border border-border/50 overflow-hidden">
+      {/* Map background — satellite/topo feel */}
+      <div className="absolute inset-0 bg-[#e8e4d8]" />
+      {/* Road network */}
+      <svg viewBox="0 0 200 110" className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+        {/* Roads */}
+        <rect x="0" y="0" width="200" height="14" fill="#f5f5f0" />
+        <line x1="0" y1="7" x2="200" y2="7" stroke="#d4d0c8" strokeWidth="0.5" strokeDasharray="4 3" />
+        <rect x="139" y="0" width="14" height="110" fill="#f5f5f0" />
+        <line x1="146" y1="0" x2="146" y2="110" stroke="#d4d0c8" strokeWidth="0.5" strokeDasharray="4 3" />
+        {/* Road labels */}
+        <text x="75" y="9" textAnchor="middle" fill="#9c9584" fontSize="3.5" fontFamily="sans-serif">CORAL STREET</text>
+        <text x="146" y="65" textAnchor="middle" fill="#9c9584" fontSize="3.2" fontFamily="sans-serif" transform="rotate(90 146 65)">PALM AVE</text>
+        {/* Neighbouring lots - faint outlines */}
+        <rect x="3" y="14" width="24" height="40" fill="none" stroke="#c8c4b8" strokeWidth="0.4" />
+        <rect x="3" y="54" width="24" height="40" fill="none" stroke="#c8c4b8" strokeWidth="0.4" />
+        <rect x="153" y="14" width="22" height="40" fill="none" stroke="#c8c4b8" strokeWidth="0.4" />
+        <rect x="153" y="54" width="22" height="40" fill="none" stroke="#c8c4b8" strokeWidth="0.4" />
+        <rect x="178" y="14" width="22" height="40" fill="none" stroke="#c8c4b8" strokeWidth="0.4" />
+        <rect x="178" y="54" width="22" height="40" fill="none" stroke="#c8c4b8" strokeWidth="0.4" />
+        {/* Building footprints on neighbours */}
+        <rect x="7" y="22" width="12" height="10" fill="#d8d4c8" rx="1" />
+        <rect x="7" y="62" width="14" height="12" fill="#d8d4c8" rx="1" />
+        <rect x="157" y="24" width="11" height="9" fill="#d8d4c8" rx="1" />
+        <rect x="157" y="62" width="13" height="11" fill="#d8d4c8" rx="1" />
+        <rect x="182" y="22" width="10" height="10" fill="#d8d4c8" rx="1" />
+        <rect x="182" y="64" width="12" height="10" fill="#d8d4c8" rx="1" />
+        {/* Vegetation patches */}
+        <circle cx="48" y="100" r="4" fill="#c5d8b8" opacity="0.5" />
+        <circle cx="120" y="100" r="5" fill="#c5d8b8" opacity="0.4" />
+        <circle cx="20" y="100" r="3" fill="#c5d8b8" opacity="0.3" />
+      </svg>
+
+      {/* Main parcel boundary */}
+      <svg viewBox="0 0 200 110" className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+        {/* Parcel fill */}
+        <motion.polygon
+          points="30,15 135,15 135,95 30,95"
+          fill="#1B1464"
+          fillOpacity="0.08"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        />
+        {/* Parcel outline */}
+        <motion.polygon
+          points="30,15 135,15 135,95 30,95"
           fill="none"
-          stroke="#10b981"
-          strokeWidth="2"
+          stroke="#1B1464"
+          strokeWidth="1.5"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
         />
 
-        {/* Split lines */}
+        {/* Street frontage indicator */}
+        <motion.line
+          x1="30" y1="15" x2="135" y2="15"
+          stroke="#f59e0b"
+          strokeWidth="2.5"
+          strokeDasharray="4 2"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        />
+
+        {/* Subdivision lot fills + outlines */}
         <AnimatePresence>
-          {showSplit && lots >= 2 && (
-            <motion.line
-              x1="100" y1="10" x2="100" y2="90"
-              stroke="#f59e0b"
-              strokeWidth="2"
-              strokeDasharray="6 3"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              exit={{ pathLength: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+          {showSplit && lotPolygons.slice(0, Math.min(lots, 4)).map((lot, i) => (
+            <motion.polygon
+              key={`lot-fill-${i}`}
+              points={lot.points}
+              fill={lotColors[i % lotColors.length]}
+              fillOpacity="0.12"
+              stroke={lotColors[i % lotColors.length]}
+              strokeWidth="1.2"
+              strokeOpacity="0.7"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4, delay: 0.2 + i * 0.15 }}
             />
-          )}
-          {showSplit && lots >= 3 && (
-            <motion.line
-              x1="10" y1="50" x2="100" y2="50"
-              stroke="#f59e0b"
-              strokeWidth="2"
-              strokeDasharray="6 3"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              exit={{ pathLength: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            />
-          )}
-          {showSplit && lots >= 4 && (
-            <motion.line
-              x1="100" y1="50" x2="190" y2="50"
-              stroke="#f59e0b"
-              strokeWidth="2"
-              strokeDasharray="6 3"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              exit={{ pathLength: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-            />
-          )}
+          ))}
         </AnimatePresence>
 
-        {/* Lot labels */}
+        {/* Lot labels with area */}
         <AnimatePresence>
-          {showSplit && Array.from({ length: Math.min(lots, 4) }).map((_, i) => {
-            const positions = lots === 2
-              ? [{ x: 50, y: 55 }, { x: 150, y: 55 }]
-              : lots === 3
-              ? [{ x: 50, y: 30 }, { x: 50, y: 70 }, { x: 150, y: 55 }]
-              : [{ x: 50, y: 30 }, { x: 50, y: 70 }, { x: 150, y: 30 }, { x: 150, y: 70 }];
-            const pos = positions[i] || { x: 100, y: 50 };
-            return (
-              <motion.text
-                key={`lot-${i}`}
-                x={pos.x}
-                y={pos.y}
+          {showSplit && lotPolygons.slice(0, Math.min(lots, 4)).map((lot, i) => (
+            <motion.g
+              key={`lot-label-${i}`}
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.5 + i * 0.15 }}
+            >
+              <text
+                x={lot.label.x}
+                y={lot.label.y - 3}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fill="#0d9488"
-                fontSize="11"
+                fill="#1B1464"
+                fontSize="5"
                 fontWeight="bold"
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ delay: 0.6 + i * 0.15 }}
+                fontFamily="sans-serif"
               >
                 Lot {i + 1}
-              </motion.text>
-            );
-          })}
+              </text>
+              <text
+                x={lot.label.x}
+                y={lot.label.y + 4}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill="#1B1464"
+                fontSize="3.5"
+                fontFamily="sans-serif"
+                opacity="0.7"
+              >
+                {lots === 2 ? (i === 0 ? '353m²' : '457m²') : lots === 3 ? ['230m²', '230m²', '350m²'][i] : '203m²'}
+              </text>
+            </motion.g>
+          ))}
+        </AnimatePresence>
+
+        {/* Driveway for battle-axe (2-lot) */}
+        <AnimatePresence>
+          {showSplit && lots === 2 && (
+            <motion.rect
+              x="118" y="15" width="17" height="77"
+              fill="none"
+              stroke="#6b7280"
+              strokeWidth="0.8"
+              strokeDasharray="3 1.5"
+              strokeOpacity="0.5"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.6 }}
+            />
+          )}
         </AnimatePresence>
       </svg>
 
-      {/* Map texture overlay */}
-      <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
-        style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 19px, #000 19px, #000 20px), repeating-linear-gradient(90deg, transparent, transparent 19px, #000 19px, #000 20px)',
-        }}
-      />
+      {/* Zoning badge */}
+      <div className="absolute top-1 left-1 bg-white/85 backdrop-blur-sm rounded px-1.5 py-0.5 shadow-sm">
+        <p className="text-[6px] text-text-tertiary uppercase tracking-wider leading-none">Zoning</p>
+        <p className="text-[7px] font-semibold text-casa-navy leading-tight">Low Density Res.</p>
+      </div>
     </div>
   );
 }
