@@ -391,12 +391,28 @@ export default function SubdivisionMap({ lat, lng, parcelGeometry, overlays, zon
                     }
                   }
 
-                  // Rear lots: depthSplit to maxDepth, minus driveway width
+                  // Rear lots + driveway handling
+                  // For 2-lot subdivisions (1 rear lot): merge driveway into the rear
+                  // lot to form an L-shaped title — the driveway is part of lot 2's land.
+                  // For 3+ lots (multiple rear lots): driveway is separate common property.
+                  const drivewayPoly = buildClippedRect(drivewayAlongStart, maxAlong + pad, minDepth - clipPad, maxDepth + clipPad);
+
                   if (rearLotCount === 1) {
-                    const rl = buildClippedRect(lotAlongStart - pad, lotAlongEnd, depthSplit, maxDepth + clipPad);
-                    if (rl) addLot(rl, lotIdx, `Lot ${lotIdx + 1}`);
+                    // Build rear lot rectangle, then union with driveway to form L-shape
+                    const rearRect = buildClippedRect(lotAlongStart - pad, lotAlongEnd, depthSplit, maxDepth + clipPad);
+                    let rearLot = rearRect;
+                    if (rearRect && drivewayPoly) {
+                      try {
+                        const merged = turf.union(turf.featureCollection([rearRect, drivewayPoly]));
+                        if (merged) rearLot = merged;
+                      } catch {
+                        // Union failed — fall back to just the rectangle
+                      }
+                    }
+                    if (rearLot) addLot(rearLot, lotIdx, `Lot ${lotIdx + 1}`);
                     lotIdx++;
                   } else {
+                    // Multiple rear lots — build them normally
                     const rearTotalArea = (() => {
                       const c = buildClippedRect(lotAlongStart - pad, lotAlongEnd, depthSplit, maxDepth + clipPad);
                       return c ? turf.area(c) : usableArea - frontTargetArea;
@@ -417,16 +433,15 @@ export default function SubdivisionMap({ lat, lng, parcelGeometry, overlays, zon
                       lotIdx++;
                       prevRear = splitEnd;
                     }
-                  }
 
-                  // Driveway / access easement: full depth along the side boundary
-                  const drivewayPoly = buildClippedRect(drivewayAlongStart, maxAlong + pad, minDepth - clipPad, maxDepth + clipPad);
-                  if (drivewayPoly) {
-                    map.addSource('driveway', { type: 'geojson', data: drivewayPoly });
-                    map.addLayer({ id: 'driveway-fill', type: 'fill', source: 'driveway', paint: { 'fill-color': '#9ca3af', 'fill-opacity': 0.3 } });
-                    map.addLayer({ id: 'driveway-outline', type: 'line', source: 'driveway', paint: { 'line-color': '#6b7280', 'line-width': 1.5, 'line-opacity': 0.7, 'line-dasharray': [3, 2] } });
-                    const dwC = turf.centroid(drivewayPoly);
-                    labelFeatures.push({ ...dwC, properties: { label: rearLotCount > 1 ? 'Access\nEasement' : 'Driveway' } });
+                    // Shared access easement — drawn separately
+                    if (drivewayPoly) {
+                      map.addSource('driveway', { type: 'geojson', data: drivewayPoly });
+                      map.addLayer({ id: 'driveway-fill', type: 'fill', source: 'driveway', paint: { 'fill-color': '#9ca3af', 'fill-opacity': 0.3 } });
+                      map.addLayer({ id: 'driveway-outline', type: 'line', source: 'driveway', paint: { 'line-color': '#6b7280', 'line-width': 1.5, 'line-opacity': 0.7, 'line-dasharray': [3, 2] } });
+                      const dwC = turf.centroid(drivewayPoly);
+                      labelFeatures.push({ ...dwC, properties: { label: 'Access\nEasement' } });
+                    }
                   }
                 }
 
