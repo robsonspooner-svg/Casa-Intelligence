@@ -297,9 +297,13 @@ export interface SubdivisionUpliftResult {
   propertyValue: number;
   /** Total value of all lots after subdivision */
   totalValueAfter: number;
-  /** Raw uplift in dollars */
+  /** Raw gross uplift in dollars (before development costs) */
   uplift: number;
-  /** Uplift as a percentage */
+  /** Estimated net uplift range — low end (conservative, after development costs) */
+  upliftLow: number;
+  /** Estimated net uplift range — high end (optimistic, after development costs) */
+  upliftHigh: number;
+  /** Uplift as a percentage (based on gross) */
   upliftPercentage: number;
   /** How the property value was determined */
   valueSource: 'valuation_api' | 'suburb_median';
@@ -370,20 +374,30 @@ export function calculateSubdivisionUplift(
   // the buyer pays for land + new build, approximating the suburb median.
   //
   // Discount by lot count: more lots = smaller each = lower per-lot value
-  const lotDiscount = numberOfLots <= 2 ? 0.90
-    : numberOfLots <= 4 ? 0.82
-    : numberOfLots <= 6 ? 0.75
-    : 0.70;
+  const lotDiscount = numberOfLots <= 2 ? 0.85
+    : numberOfLots <= 4 ? 0.78
+    : numberOfLots <= 6 ? 0.72
+    : 0.65;
 
   const perLotValue = Math.round(suburbMedian * lotDiscount);
   const totalValueAfter = perLotValue * numberOfLots;
-  const uplift = Math.max(0, totalValueAfter - propertyValue);
+  const grossUplift = Math.max(0, totalValueAfter - propertyValue);
+
+  // Estimated development costs to derive net uplift range.
+  // Typical costs: council fees, surveying, civil works, infrastructure
+  // contributions, legal, sales commissions, holding costs.
+  // Conservative: 55-65% of gross uplift consumed by costs (net = 35-45%)
+  // Optimistic: 30-40% of gross uplift consumed by costs (net = 60-70%)
+  const upliftLow = Math.round(grossUplift * 0.35);
+  const upliftHigh = Math.round(grossUplift * 0.65);
 
   return {
     propertyValue,
     totalValueAfter,
-    uplift,
-    upliftPercentage: propertyValue > 0 ? Math.round((uplift / propertyValue) * 100) : 0,
+    uplift: grossUplift,
+    upliftLow,
+    upliftHigh,
+    upliftPercentage: propertyValue > 0 ? Math.round((grossUplift / propertyValue) * 100) : 0,
     valueSource,
     perLotValue,
   };

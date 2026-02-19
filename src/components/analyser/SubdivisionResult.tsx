@@ -57,7 +57,7 @@ interface SubdivisionResultProps {
   parcel: ParcelData;
   lga: string | null;
   subdivided: boolean;
-  uplift: { propertyValue: number; totalValueAfter: number; uplift: number; valueSource: string; perLotValue: number } | null;
+  uplift: { propertyValue: number; totalValueAfter: number; uplift: number; upliftLow: number; upliftHigh: number; valueSource: string; perLotValue: number } | null;
   onSubdivide: () => void;
   lotCount: number;
   maxLots: number;
@@ -295,15 +295,18 @@ export default function SubdivisionResult({
         </div>
       )}
 
-      {/* Uplift result */}
+      {/* Uplift result — net range */}
       {subdivided && uplift && (
         <div className="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-6 text-center">
           <p className="text-sm text-emerald-700 font-medium mb-2">
-            {isUnknownZoning ? 'Approx. Subdivision Uplift' : 'Estimated Subdivision Uplift'}
+            {isUnknownZoning ? 'Approx. Net Uplift' : 'Estimated Net Uplift'}
           </p>
-          <p className="text-4xl font-serif font-bold text-emerald-600">
-            {isUnknownZoning && <span className="text-xl font-normal">approx. </span>}
-            +$<AnimatedCounter value={uplift.uplift} />
+          <p className="text-3xl font-serif font-bold text-emerald-600">
+            {isUnknownZoning && <span className="text-lg font-normal">approx. </span>}
+            +$<AnimatedCounter value={uplift.upliftLow} /> – $<AnimatedCounter value={uplift.upliftHigh} />
+          </p>
+          <p className="text-xs text-emerald-600/70 mt-1">
+            After typical development costs
           </p>
           <div className="flex justify-center gap-6 mt-4 text-xs text-emerald-700">
             <div>

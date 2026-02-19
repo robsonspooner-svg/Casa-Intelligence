@@ -34,8 +34,10 @@ interface MockListing {
   maxLots: number;
   lotArea: number;
   landValue: number;
-  uplift: number;
+  upliftLow: number;
+  upliftHigh: number;
   perLotValue: number;
+  potentialScore: number;
 }
 
 const mockListings: MockListing[] = [
@@ -52,8 +54,10 @@ const mockListings: MockListing[] = [
     maxLots: 2,
     lotArea: 810,
     landValue: 720000,
-    uplift: 487000,
+    upliftLow: 120000,
+    upliftHigh: 250000,
     perLotValue: 765000,
+    potentialScore: 78,
   },
   {
     address: '7 Palm Ave, Buderim',
@@ -68,8 +72,10 @@ const mockListings: MockListing[] = [
     maxLots: 4,
     lotArea: 650,
     landValue: 540000,
-    uplift: 215000,
+    upliftLow: 65000,
+    upliftHigh: 180000,
     perLotValue: 780000,
+    potentialScore: 54,
   },
   {
     address: '22 Banksia Dr, Caloundra',
@@ -84,8 +90,10 @@ const mockListings: MockListing[] = [
     maxLots: 3,
     lotArea: 1120,
     landValue: 920000,
-    uplift: 635000,
+    upliftLow: 150000,
+    upliftHigh: 340000,
     perLotValue: 697000,
+    potentialScore: 72,
   },
 ];
 
@@ -120,8 +128,10 @@ interface AnalysisResult {
   eligible: boolean;
   maxLots: number;
   landValue: number;
-  uplift: number;
+  upliftLow: number;
+  upliftHigh: number;
   perLotValue: number;
+  potentialScore: number;
   tag: 'Subdividable' | 'Development Potential';
 }
 
@@ -167,181 +177,90 @@ function CountUp({ value, prefix = '', suffix = '', duration = 800 }: {
 }
 
 // ---------------------------------------------------------------------------
-// Fake parcel SVG — a simple lot split visualization
+// Potential score ring — compact radial chart
 // ---------------------------------------------------------------------------
 
-function ParcelGraphic({ lots, phase }: { lots: number; phase: AnalysisPhase }) {
-  const showSplit = phase === 'done' && lots >= 2;
-
-  // Lot positions for 2/3/4-lot layouts (battle-axe style for 2, mixed for 3+)
-  const lotPolygons: { points: string; label: { x: number; y: number } }[] = (() => {
-    if (lots === 2) return [
-      { points: '30,18 118,18 118,58 30,58', label: { x: 74, y: 40 } },
-      { points: '30,58 118,58 118,92 135,92 135,18 118,18 118,58 30,58 30,92 118,92 135,92 135,18', label: { x: 74, y: 77 } },
-    ];
-    if (lots === 3) return [
-      { points: '30,18 74,18 74,58 30,58', label: { x: 52, y: 40 } },
-      { points: '74,18 118,18 118,58 74,58', label: { x: 96, y: 40 } },
-      { points: '30,58 135,58 135,92 30,92', label: { x: 82, y: 77 } },
-    ];
-    return [
-      { points: '30,18 74,18 74,55 30,55', label: { x: 52, y: 38 } },
-      { points: '74,18 118,18 118,55 74,55', label: { x: 96, y: 38 } },
-      { points: '30,55 74,55 74,92 30,92', label: { x: 52, y: 75 } },
-      { points: '74,55 135,55 135,92 74,92', label: { x: 104, y: 75 } },
-    ];
-  })();
-
-  const lotColors = ['#1B1464', '#16a34a', '#0ea5e9', '#f59e0b'];
+function PotentialRing({ score, lots, phase }: { score: number; lots: number; phase: AnalysisPhase }) {
+  const showResult = phase === 'done';
+  const radius = 32;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 100) * circumference;
 
   return (
-    <div className="relative w-full h-32 rounded-lg border border-border/50 overflow-hidden">
-      {/* Map background — satellite/topo feel */}
-      <div className="absolute inset-0 bg-[#e8e4d8]" />
-      {/* Road network */}
-      <svg viewBox="0 0 200 110" className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-        {/* Roads */}
-        <rect x="0" y="0" width="200" height="14" fill="#f5f5f0" />
-        <line x1="0" y1="7" x2="200" y2="7" stroke="#d4d0c8" strokeWidth="0.5" strokeDasharray="4 3" />
-        <rect x="139" y="0" width="14" height="110" fill="#f5f5f0" />
-        <line x1="146" y1="0" x2="146" y2="110" stroke="#d4d0c8" strokeWidth="0.5" strokeDasharray="4 3" />
-        {/* Road labels */}
-        <text x="75" y="9" textAnchor="middle" fill="#9c9584" fontSize="3.5" fontFamily="sans-serif">CORAL STREET</text>
-        <text x="146" y="65" textAnchor="middle" fill="#9c9584" fontSize="3.2" fontFamily="sans-serif" transform="rotate(90 146 65)">PALM AVE</text>
-        {/* Neighbouring lots - faint outlines */}
-        <rect x="3" y="14" width="24" height="40" fill="none" stroke="#c8c4b8" strokeWidth="0.4" />
-        <rect x="3" y="54" width="24" height="40" fill="none" stroke="#c8c4b8" strokeWidth="0.4" />
-        <rect x="153" y="14" width="22" height="40" fill="none" stroke="#c8c4b8" strokeWidth="0.4" />
-        <rect x="153" y="54" width="22" height="40" fill="none" stroke="#c8c4b8" strokeWidth="0.4" />
-        <rect x="178" y="14" width="22" height="40" fill="none" stroke="#c8c4b8" strokeWidth="0.4" />
-        <rect x="178" y="54" width="22" height="40" fill="none" stroke="#c8c4b8" strokeWidth="0.4" />
-        {/* Building footprints on neighbours */}
-        <rect x="7" y="22" width="12" height="10" fill="#d8d4c8" rx="1" />
-        <rect x="7" y="62" width="14" height="12" fill="#d8d4c8" rx="1" />
-        <rect x="157" y="24" width="11" height="9" fill="#d8d4c8" rx="1" />
-        <rect x="157" y="62" width="13" height="11" fill="#d8d4c8" rx="1" />
-        <rect x="182" y="22" width="10" height="10" fill="#d8d4c8" rx="1" />
-        <rect x="182" y="64" width="12" height="10" fill="#d8d4c8" rx="1" />
-        {/* Vegetation patches */}
-        <circle cx="48" y="100" r="4" fill="#c5d8b8" opacity="0.5" />
-        <circle cx="120" y="100" r="5" fill="#c5d8b8" opacity="0.4" />
-        <circle cx="20" y="100" r="3" fill="#c5d8b8" opacity="0.3" />
-      </svg>
-
-      {/* Main parcel boundary */}
-      <svg viewBox="0 0 200 110" className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-        {/* Parcel fill */}
-        <motion.polygon
-          points="30,15 135,15 135,95 30,95"
-          fill="#1B1464"
-          fillOpacity="0.08"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        />
-        {/* Parcel outline */}
-        <motion.polygon
-          points="30,15 135,15 135,95 30,95"
-          fill="none"
-          stroke="#1B1464"
-          strokeWidth="1.5"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-        />
-
-        {/* Street frontage indicator */}
-        <motion.line
-          x1="30" y1="15" x2="135" y2="15"
-          stroke="#f59e0b"
-          strokeWidth="2.5"
-          strokeDasharray="4 2"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        />
-
-        {/* Subdivision lot fills + outlines */}
-        <AnimatePresence>
-          {showSplit && lotPolygons.slice(0, Math.min(lots, 4)).map((lot, i) => (
-            <motion.polygon
-              key={`lot-fill-${i}`}
-              points={lot.points}
-              fill={lotColors[i % lotColors.length]}
-              fillOpacity="0.12"
-              stroke={lotColors[i % lotColors.length]}
-              strokeWidth="1.2"
-              strokeOpacity="0.7"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4, delay: 0.2 + i * 0.15 }}
-            />
-          ))}
-        </AnimatePresence>
-
-        {/* Lot labels with area */}
-        <AnimatePresence>
-          {showSplit && lotPolygons.slice(0, Math.min(lots, 4)).map((lot, i) => (
-            <motion.g
-              key={`lot-label-${i}`}
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ delay: 0.5 + i * 0.15 }}
-            >
-              <text
-                x={lot.label.x}
-                y={lot.label.y - 3}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fill="#1B1464"
-                fontSize="5"
-                fontWeight="bold"
-                fontFamily="sans-serif"
+    <div className="relative w-full h-32 rounded-lg border border-border/50 overflow-hidden bg-surface flex items-center justify-center gap-4 px-4">
+      {/* Ring chart */}
+      <div className="relative flex-shrink-0">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          {/* Track */}
+          <circle cx="40" cy="40" r={radius} fill="none" stroke="#e5e7eb" strokeWidth="5" />
+          {/* Score arc */}
+          <motion.circle
+            cx="40" cy="40" r={radius}
+            fill="none"
+            stroke={score >= 70 ? '#10b981' : score >= 40 ? '#f59e0b' : '#ef4444'}
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={showResult ? offset : circumference}
+            transform="rotate(-90 40 40)"
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset: showResult ? offset : circumference }}
+            transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
+          />
+          {/* Center text */}
+          <AnimatePresence>
+            {showResult && (
+              <motion.g
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
               >
-                Lot {i + 1}
-              </text>
-              <text
-                x={lot.label.x}
-                y={lot.label.y + 4}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fill="#1B1464"
-                fontSize="3.5"
-                fontFamily="sans-serif"
-                opacity="0.7"
-              >
-                {lots === 2 ? (i === 0 ? '353m²' : '457m²') : lots === 3 ? ['230m²', '230m²', '350m²'][i] : '203m²'}
-              </text>
-            </motion.g>
-          ))}
-        </AnimatePresence>
-
-        {/* Driveway for battle-axe (2-lot) */}
-        <AnimatePresence>
-          {showSplit && lots === 2 && (
-            <motion.rect
-              x="118" y="15" width="17" height="77"
-              fill="none"
-              stroke="#6b7280"
-              strokeWidth="0.8"
-              strokeDasharray="3 1.5"
-              strokeOpacity="0.5"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ delay: 0.6 }}
-            />
-          )}
-        </AnimatePresence>
-      </svg>
-
-      {/* Zoning badge */}
-      <div className="absolute top-1 left-1 bg-white/85 backdrop-blur-sm rounded px-1.5 py-0.5 shadow-sm">
-        <p className="text-[6px] text-text-tertiary uppercase tracking-wider leading-none">Zoning</p>
-        <p className="text-[7px] font-semibold text-casa-navy leading-tight">Low Density Res.</p>
+                <text x="40" y="36" textAnchor="middle" fill="#111827" fontSize="16" fontWeight="bold" fontFamily="sans-serif">
+                  {score}
+                </text>
+                <text x="40" y="49" textAnchor="middle" fill="#6b7280" fontSize="7" fontFamily="sans-serif">
+                  / 100
+                </text>
+              </motion.g>
+            )}
+          </AnimatePresence>
+        </svg>
       </div>
+
+      {/* Metric stack */}
+      <AnimatePresence>
+        {showResult && (
+          <motion.div
+            className="flex flex-col gap-1.5 min-w-0"
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <p className="text-[9px] font-semibold text-text-tertiary uppercase tracking-wider">Potential Score</p>
+            <div className="flex items-center gap-1.5">
+              <div className={`w-1.5 h-1.5 rounded-full ${score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-500'}`} />
+              <p className="text-xs font-semibold text-text-primary">
+                {score >= 70 ? 'High' : score >= 40 ? 'Moderate' : 'Low'} Potential
+              </p>
+            </div>
+            <div className="flex items-center gap-3 text-[10px] text-text-secondary">
+              <span>{lots} lots possible</span>
+              <span className="text-text-tertiary">·</span>
+              <span className={`font-medium ${score >= 70 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                {score >= 70 ? 'Strong yield' : 'Moderate yield'}
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Loading state */}
+      {!showResult && phase !== 'idle' && (
+        <div className="flex flex-col items-center gap-1">
+          <Loader2 className="w-4 h-4 text-teal-600 animate-spin" />
+          <p className="text-[9px] text-text-tertiary">Calculating...</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -445,8 +364,10 @@ export default function AgentMockup() {
             eligible: listing.eligible,
             maxLots: listing.maxLots,
             landValue: listing.landValue,
-            uplift: listing.uplift,
+            upliftLow: listing.upliftLow,
+            upliftHigh: listing.upliftHigh,
             perLotValue: listing.perLotValue,
+            potentialScore: listing.potentialScore,
             tag: listing.tag,
           });
         }
@@ -653,10 +574,10 @@ export default function AgentMockup() {
                         </div>
                       </div>
 
-                      {/* Parcel visualization + stats grid */}
+                      {/* Potential score + stats grid */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                        {/* Left: Parcel graphic */}
-                        <ParcelGraphic lots={result.maxLots} phase={phase} />
+                        {/* Left: Potential ring */}
+                        <PotentialRing score={result.potentialScore} lots={result.maxLots} phase={phase} />
 
                         {/* Right: Stats grid */}
                         <div className="grid grid-cols-2 gap-2">
@@ -707,8 +628,8 @@ export default function AgentMockup() {
                         </div>
                       </div>
 
-                      {/* Uplift banner */}
-                      {result.eligible && result.uplift > 0 && (
+                      {/* Uplift banner — range format */}
+                      {result.eligible && result.upliftHigh > 0 && (
                         <motion.div
                           className="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-300 rounded-xl p-4 text-center"
                           initial={{ opacity: 0, scale: 0.95 }}
@@ -716,10 +637,13 @@ export default function AgentMockup() {
                           transition={{ delay: 0.3 }}
                         >
                           <p className="text-[10px] text-emerald-600 uppercase tracking-wider font-semibold mb-1">
-                            Estimated Subdivision Uplift
+                            Estimated Net Uplift
                           </p>
-                          <p className="text-2xl font-serif font-bold text-emerald-600">
-                            +$<CountUp value={result.uplift} duration={1200} />
+                          <p className="text-xl font-serif font-bold text-emerald-600">
+                            +$<CountUp value={result.upliftLow} duration={1000} /> – $<CountUp value={result.upliftHigh} duration={1200} />
+                          </p>
+                          <p className="text-[9px] text-emerald-600/60 mt-1">
+                            After typical development costs
                           </p>
                           <div className="flex justify-center gap-6 mt-2 text-[10px] text-emerald-700">
                             <div>
@@ -731,10 +655,8 @@ export default function AgentMockup() {
                               <p className="font-semibold">${(result.perLotValue / 1000).toFixed(0)}K</p>
                             </div>
                             <div>
-                              <p className="text-[8px] text-emerald-500 uppercase">Total After</p>
-                              <p className="font-semibold">
-                                ${((result.perLotValue * result.maxLots) / 1000).toFixed(0)}K
-                              </p>
+                              <p className="text-[8px] text-emerald-500 uppercase">Lots</p>
+                              <p className="font-semibold">{result.maxLots}</p>
                             </div>
                           </div>
                         </motion.div>
