@@ -138,40 +138,82 @@ export default function SubdivisionMap({ lat, lng, parcelGeometry, overlays, zon
                 const labelFeatures: GeoJSON.Feature[] = [];
 
                 // --- 1) Find the street-facing edge ---
-                // The geocoded point sits ON the road in front of the property.
-                // The nearest parcel edge to this point is the street frontage.
+                // Two strategies depending on whether the geocoded point is inside
+                // or outside the parcel polygon.
                 //
-                // We measure point-to-segment distance for every edge, then pick
-                // the closest one. To avoid short stub edges winning over the
-                // actual frontage when distances are similar, we group all edges
-                // within 20% of the minimum distance and pick the longest.
+                // OUTSIDE (point is on the road): nearest edge = street frontage.
+                //   Among edges within 20% of min distance, pick the longest.
+                //
+                // INSIDE (geocoder placed point on the building): use outward-normal
+                //   alignment — the street is in the direction from centroid toward
+                //   the geocoded point. Pick the edge whose outward normal best
+                //   aligns with that direction, weighted by edge length.
                 const parcelCtr = turf.centroid(feature);
                 const cLng = parcelCtr.geometry.coordinates[0];
                 const cLat = parcelCtr.geometry.coordinates[1];
 
-                interface EdgeInfo { idx: number; dist: number; len: number }
-                const edges: EdgeInfo[] = [];
-                for (let j = 0; j < ring.length - 1; j++) {
-                  const [ex, ey] = ring[j];
-                  const [fx, fy] = ring[j + 1];
-                  const dx = fx - ex;
-                  const dy = fy - ey;
-                  const lenSq = dx * dx + dy * dy;
-                  if (lenSq < 1e-14) continue;
-                  const t = Math.max(0, Math.min(1, ((lng - ex) * dx + (lat - ey) * dy) / lenSq));
-                  const px = ex + t * dx;
-                  const py = ey + t * dy;
-                  const dist = Math.sqrt((lng - px) ** 2 + (lat - py) ** 2);
-                  const len = Math.sqrt(lenSq);
-                  edges.push({ idx: j, dist, len });
-                }
+                const geoPoint = turf.point([lng, lat]);
+                const pointInside = turf.booleanPointInPolygon(geoPoint, feature);
 
-                // Find minimum distance, then among edges within 20% of min, pick longest
-                const minDist = Math.min(...edges.map(e => e.dist));
-                const threshold = minDist * 1.2;
-                const candidates = edges.filter(e => e.dist <= threshold);
-                candidates.sort((a, b) => b.len - a.len); // longest first
-                let bestEdgeIdx = candidates.length > 0 ? candidates[0].idx : 0;
+                let bestEdgeIdx = 0;
+
+                if (!pointInside) {
+                  // Point is outside → nearest edge to geocoded point
+                  interface EdgeInfo { idx: number; dist: number; len: number }
+                  const edgeList: EdgeInfo[] = [];
+                  for (let j = 0; j < ring.length - 1; j++) {
+                    const [ex, ey] = ring[j];
+                    const [fx, fy] = ring[j + 1];
+                    const dx = fx - ex;
+                    const dy = fy - ey;
+                    const lenSq = dx * dx + dy * dy;
+                    if (lenSq < 1e-14) continue;
+                    const t = Math.max(0, Math.min(1, ((lng - ex) * dx + (lat - ey) * dy) / lenSq));
+                    const px = ex + t * dx;
+                    const py = ey + t * dy;
+                    const dist = Math.sqrt((lng - px) ** 2 + (lat - py) ** 2);
+                    edgeList.push({ idx: j, dist, len: Math.sqrt(lenSq) });
+                  }
+                  const minDist = Math.min(...edgeList.map(e => e.dist));
+                  const nearEdges = edgeList.filter(e => e.dist <= minDist * 1.2);
+                  nearEdges.sort((a, b) => b.len - a.len);
+                  bestEdgeIdx = nearEdges.length > 0 ? nearEdges[0].idx : 0;
+                } else {
+                  // Point is inside → outward-normal alignment with centroid→point direction
+                  const streetDirX = lng - cLng;
+                  const streetDirY = lat - cLat;
+                  const streetDirLen = Math.sqrt(streetDirX * streetDirX + streetDirY * streetDirY);
+                  let bestScore = -Infinity;
+                  for (let j = 0; j < ring.length - 1; j++) {
+                    const [ex, ey] = ring[j];
+                    const [fx, fy] = ring[j + 1];
+                    const eDx = fx - ex;
+                    const eDy = fy - ey;
+                    const eLen = Math.sqrt(eDx * eDx + eDy * eDy);
+                    if (eLen < 1e-10) continue;
+                    // Outward-facing normal
+                    const edgeMidX = (ex + fx) / 2;
+                    const edgeMidY = (ey + fy) / 2;
+                    let nx = eDy / eLen;
+                    let ny = -eDx / eLen;
+                    // Ensure it points outward (away from centroid)
+                    if ((edgeMidX + nx - cLng) * (edgeMidX + nx - cLng) +
+                        (edgeMidY + ny - cLat) * (edgeMidY + ny - cLat) <
+                        (edgeMidX - nx - cLng) * (edgeMidX - nx - cLng) +
+                        (edgeMidY - ny - cLat) * (edgeMidY - ny - cLat)) {
+                      nx = -nx;
+                      ny = -ny;
+                    }
+                    const dot = streetDirLen > 1e-14
+                      ? (nx * streetDirX + ny * streetDirY) / streetDirLen
+                      : 0;
+                    const score = dot * eLen;
+                    if (score > bestScore) {
+                      bestScore = score;
+                      bestEdgeIdx = j;
+                    }
+                  }
+                }
 
                 // --- 2) Street edge vector and coordinate system ---
                 const [ax, ay] = ring[bestEdgeIdx];
