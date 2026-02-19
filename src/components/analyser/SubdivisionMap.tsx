@@ -374,12 +374,17 @@ export default function SubdivisionMap({ lat, lng, parcelGeometry, overlays, zon
                   const lotAlongStart = minAlong;
                   const lotAlongEnd = drivewayAlongStart;
 
-                  // Find depth split that balances area between front and rear lot rows
-                  // Front lots get (frontLotCount / lotCount) share of the usable area
-                  // (usable = total minus driveway area)
-                  const usablePoly = buildClippedRect(lotAlongStart - pad, lotAlongEnd, minDepth - clipPad, maxDepth + clipPad);
-                  const usableArea = usablePoly ? turf.area(usablePoly) : totalAreaM2;
-                  const frontTargetArea = usableArea * (frontLotCount / lotCount);
+                  // Find depth split that balances TOTAL lot areas.
+                  // For 2-lot battle-axe: Lot 2 = rear rectangle + driveway handle.
+                  // So for equal titles: frontLot = totalArea / 2. The front lot
+                  // rectangle (in usable width) must equal half the total parcel.
+                  // For 3+ lots: each lot should get totalArea / lotCount, with the
+                  // driveway as separate common property not counted toward any lot.
+                  const drivewayRect = buildClippedRect(drivewayAlongStart, maxAlong + pad, minDepth - clipPad, maxDepth + clipPad);
+                  const drivewayArea = drivewayRect ? turf.area(drivewayRect) : 0;
+                  const frontTargetArea = rearLotCount === 1
+                    ? totalAreaM2 / 2  // front lot = half total (rear lot = other half including driveway)
+                    : (totalAreaM2 - drivewayArea) * (frontLotCount / lotCount); // driveway is common property
                   const depthSplit = findEqualAreaSplit(
                     'depth', minDepth, maxDepth, lotAlongStart, lotAlongEnd, frontTargetArea,
                   );
@@ -460,7 +465,7 @@ export default function SubdivisionMap({ lat, lng, parcelGeometry, overlays, zon
                     // Multiple rear lots — build them normally
                     const rearTotalArea = (() => {
                       const c = buildClippedRect(lotAlongStart - pad, lotAlongEnd, depthSplit, maxDepth + clipPad);
-                      return c ? turf.area(c) : usableArea - frontTargetArea;
+                      return c ? turf.area(c) : (totalAreaM2 - drivewayArea) - frontTargetArea;
                     })();
                     const rearPerLot = rearTotalArea / rearLotCount;
                     let prevRear = lotAlongStart;
