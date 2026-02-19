@@ -138,21 +138,33 @@ export default function SubdivisionMap({ lat, lng, parcelGeometry, overlays, zon
                 const labelFeatures: GeoJSON.Feature[] = [];
 
                 // --- 1) Find the street-facing edge ---
+                // The geocoded point is typically ON the road in front of the property.
+                // We score each edge by: (a) distance from the geocoded point, (b) whether
+                // the point projects cleanly onto the segment (t ∈ [0,1]), and (c) edge
+                // length — street frontages tend to be among the longer edges.
+                //
+                // Scoring: lower is better.  score = distance × (t-penalty) / sqrt(edgeLen)
+                //   – t-penalty = 1 if t ∈ [0.05, 0.95], 3 otherwise (point projects past edge ends)
+                //   – dividing by sqrt(edgeLen) favours longer edges
                 let bestEdgeIdx = 0;
-                let bestDist = Infinity;
+                let bestScore = Infinity;
                 for (let j = 0; j < ring.length - 1; j++) {
                   const [ex, ey] = ring[j];
                   const [fx, fy] = ring[j + 1];
                   const dx = fx - ex;
                   const dy = fy - ey;
                   const lenSq = dx * dx + dy * dy;
-                  if (lenSq === 0) continue;
-                  const t = Math.max(0, Math.min(1, ((lng - ex) * dx + (lat - ey) * dy) / lenSq));
-                  const px = ex + t * dx;
-                  const py = ey + t * dy;
+                  if (lenSq < 1e-14) continue;
+                  const t = ((lng - ex) * dx + (lat - ey) * dy) / lenSq;
+                  const tc = Math.max(0, Math.min(1, t));
+                  const px = ex + tc * dx;
+                  const py = ey + tc * dy;
                   const dist = Math.sqrt((lng - px) ** 2 + (lat - py) ** 2);
-                  if (dist < bestDist) {
-                    bestDist = dist;
+                  const edgeLen = Math.sqrt(lenSq);
+                  const tPenalty = (t >= 0.05 && t <= 0.95) ? 1 : 3;
+                  const score = (dist * tPenalty) / Math.sqrt(edgeLen);
+                  if (score < bestScore) {
+                    bestScore = score;
                     bestEdgeIdx = j;
                   }
                 }
