@@ -139,59 +139,39 @@ export default function SubdivisionMap({ lat, lng, parcelGeometry, overlays, zon
 
                 // --- 1) Find the street-facing edge ---
                 // The geocoded point sits ON the road in front of the property.
-                // Strategy: the street is in the direction from the parcel centroid
-                // toward the geocoded point. We pick the edge whose outward-facing
-                // normal best aligns with that "street direction" vector, weighted
-                // by edge length (longer edges are more likely to be the frontage).
+                // The nearest parcel edge to this point is the street frontage.
                 //
-                // This is far more robust than pure distance-based scoring because
-                // it doesn't get confused by short side edges that happen to be
-                // physically close to the geocoded point.
+                // We measure point-to-segment distance for every edge, then pick
+                // the closest one. To avoid short stub edges winning over the
+                // actual frontage when distances are similar, we group all edges
+                // within 20% of the minimum distance and pick the longest.
                 const parcelCtr = turf.centroid(feature);
                 const cLng = parcelCtr.geometry.coordinates[0];
                 const cLat = parcelCtr.geometry.coordinates[1];
-                // Direction from centroid toward the geocoded (street) point
-                const streetDirX = lng - cLng;
-                const streetDirY = lat - cLat;
-                const streetDirLen = Math.sqrt(streetDirX * streetDirX + streetDirY * streetDirY);
 
-                let bestEdgeIdx = 0;
-                let bestScore = -Infinity; // higher is better now
+                interface EdgeInfo { idx: number; dist: number; len: number }
+                const edges: EdgeInfo[] = [];
                 for (let j = 0; j < ring.length - 1; j++) {
                   const [ex, ey] = ring[j];
                   const [fx, fy] = ring[j + 1];
-                  const eDx = fx - ex;
-                  const eDy = fy - ey;
-                  const eLen = Math.sqrt(eDx * eDx + eDy * eDy);
-                  if (eLen < 1e-10) continue;
-
-                  // Outward-facing normal: for a CCW polygon, outward is (dy, -dx).
-                  // For CW polygon, it's (-dy, dx). We'll compute both and pick the
-                  // one that points AWAY from centroid (i.e. outward).
-                  const edgeMidX = (ex + fx) / 2;
-                  const edgeMidY = (ey + fy) / 2;
-                  let nx = eDy / eLen;
-                  let ny = -eDx / eLen;
-                  // Ensure normal points outward (away from centroid)
-                  if ((edgeMidX + nx - cLng) * (edgeMidX + nx - cLng) +
-                      (edgeMidY + ny - cLat) * (edgeMidY + ny - cLat) <
-                      (edgeMidX - nx - cLng) * (edgeMidX - nx - cLng) +
-                      (edgeMidY - ny - cLat) * (edgeMidY - ny - cLat)) {
-                    nx = -nx;
-                    ny = -ny;
-                  }
-
-                  // Score = dot(outwardNormal, streetDir) × edgeLength
-                  // This favours edges that face toward the street AND are long
-                  const dot = streetDirLen > 1e-14
-                    ? (nx * streetDirX + ny * streetDirY) / streetDirLen
-                    : 0;
-                  const score = dot * eLen;
-                  if (score > bestScore) {
-                    bestScore = score;
-                    bestEdgeIdx = j;
-                  }
+                  const dx = fx - ex;
+                  const dy = fy - ey;
+                  const lenSq = dx * dx + dy * dy;
+                  if (lenSq < 1e-14) continue;
+                  const t = Math.max(0, Math.min(1, ((lng - ex) * dx + (lat - ey) * dy) / lenSq));
+                  const px = ex + t * dx;
+                  const py = ey + t * dy;
+                  const dist = Math.sqrt((lng - px) ** 2 + (lat - py) ** 2);
+                  const len = Math.sqrt(lenSq);
+                  edges.push({ idx: j, dist, len });
                 }
+
+                // Find minimum distance, then among edges within 20% of min, pick longest
+                const minDist = Math.min(...edges.map(e => e.dist));
+                const threshold = minDist * 1.2;
+                const candidates = edges.filter(e => e.dist <= threshold);
+                candidates.sort((a, b) => b.len - a.len); // longest first
+                let bestEdgeIdx = candidates.length > 0 ? candidates[0].idx : 0;
 
                 // --- 2) Street edge vector and coordinate system ---
                 const [ax, ay] = ring[bestEdgeIdx];
