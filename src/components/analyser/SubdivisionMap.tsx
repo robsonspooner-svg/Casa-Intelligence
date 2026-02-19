@@ -395,21 +395,44 @@ export default function SubdivisionMap({ lat, lng, parcelGeometry, overlays, zon
                   // For 2-lot subdivisions (1 rear lot): merge driveway into the rear
                   // lot to form an L-shaped title — the driveway is part of lot 2's land.
                   // For 3+ lots (multiple rear lots): driveway is separate common property.
-                  const drivewayPoly = buildClippedRect(drivewayAlongStart, maxAlong + pad, minDepth - clipPad, maxDepth + clipPad);
-
                   if (rearLotCount === 1) {
-                    // Build rear lot rectangle, then union with driveway to form L-shape
-                    const rearRect = buildClippedRect(lotAlongStart - pad, lotAlongEnd, depthSplit, maxDepth + clipPad);
-                    let rearLot = rearRect;
-                    if (rearRect && drivewayPoly) {
-                      try {
-                        const merged = turf.union(turf.featureCollection([rearRect, drivewayPoly]));
-                        if (merged) rearLot = merged;
-                      } catch {
-                        // Union failed — fall back to just the rectangle
-                      }
-                    }
-                    if (rearLot) addLot(rearLot, lotIdx, `Lot ${lotIdx + 1}`);
+                    // Build L-shaped rear lot directly as a single polygon (no union seam).
+                    //
+                    // Depth axis: minDepth = street, maxDepth = rear
+                    // Along axis: minAlong = left, maxAlong = right (driveway side)
+                    //
+                    //  REAR (maxDepth)
+                    //   A───────────────────B──────C
+                    //   │   rear portion    │ drwy │
+                    //   F──────────────────-E      │
+                    //          (depthSplit) │      │
+                    //                      │      │
+                    //                      G──────D
+                    //  STREET (minDepth)
+                    //
+                    const aL = lotAlongStart - pad;   // left edge
+                    const aM = lotAlongEnd;            // inner step (driveway start)
+                    const aR = maxAlong + pad;         // right edge (driveway outer)
+                    const dStreet = minDepth - clipPad; // street
+                    const dSplit = depthSplit;          // front/rear boundary
+                    const dRear = maxDepth + clipPad;   // rear
+                    const toCoord = (a: number, d: number): [number, number] => [
+                      ax + a * ux + d * perpX,
+                      ay + a * uy + d * perpY,
+                    ];
+                    const lShape = [
+                      toCoord(aL, dRear),    // A: rear-left
+                      toCoord(aM, dRear),    // B: rear inner corner
+                      toCoord(aR, dRear),    // C: rear-right (driveway)
+                      toCoord(aR, dStreet),  // D: street-right (driveway at street)
+                      toCoord(aM, dStreet),  // E/G: street inner corner
+                      toCoord(aM, dSplit),   // E: step to depthSplit
+                      toCoord(aL, dSplit),   // F: front/rear boundary left
+                      toCoord(aL, dRear),    // close ring
+                    ];
+                    const lPoly = turf.polygon([lShape]);
+                    const clipped = turf.intersect(turf.featureCollection([feature, lPoly]));
+                    if (clipped) addLot(clipped, lotIdx, `Lot ${lotIdx + 1}`);
                     lotIdx++;
                   } else {
                     // Multiple rear lots — build them normally
@@ -434,7 +457,8 @@ export default function SubdivisionMap({ lat, lng, parcelGeometry, overlays, zon
                       prevRear = splitEnd;
                     }
 
-                    // Shared access easement — drawn separately
+                    // Shared access easement — drawn separately as common property
+                    const drivewayPoly = buildClippedRect(drivewayAlongStart, maxAlong + pad, minDepth - clipPad, maxDepth + clipPad);
                     if (drivewayPoly) {
                       map.addSource('driveway', { type: 'geojson', data: drivewayPoly });
                       map.addLayer({ id: 'driveway-fill', type: 'fill', source: 'driveway', paint: { 'fill-color': '#9ca3af', 'fill-opacity': 0.3 } });
