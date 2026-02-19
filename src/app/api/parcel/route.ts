@@ -13,18 +13,26 @@ function esriRingsToGeoJSON(rings: number[][][]): GeoJSON.Geometry {
   };
 }
 
-/** Detect strata / community title plans — these return fragment geometry, not the full land lot */
+/**
+ * Detect strata / community title plans — these return fragment geometry,
+ * not the full land lot. We need to compute a convex hull for these.
+ *
+ * IMPORTANT: SP (Survey Plan) is NOT strata — it's the standard plan type
+ * for regular residential subdivisions. Including SP here caused the convex
+ * hull to merge all lots in an entire subdivision into one giant boundary.
+ * Only BUP, GTP, and CTS are true strata/community title types.
+ */
 function isStrataPlan(plan: string | null): boolean {
   if (!plan) return false;
   const upper = plan.toUpperCase();
-  // BUP = Building Units Plan, SP = Survey Plan (strata), GTP = Group Titles Plan, CTS = Community Title Scheme
-  return /BUP|SP|GTP|CTS/.test(upper);
+  // BUP = Building Units Plan, GTP = Group Titles Plan, CTS = Community Title Scheme
+  return /BUP|GTP|CTS/.test(upper);
 }
 
 /** Extract the plan identifier from a lotplan string (e.g. "0BUP5536" -> "BUP5536") */
 function extractPlan(lotplan: string): string | null {
-  // Lotplan format: lot + plan, e.g. "0BUP5536", "00000BUP5536", "409SP332538"
-  const match = lotplan.match(/(BUP|SP|GTP|CTS)\d+$/i);
+  // Lotplan format: lot + plan, e.g. "0BUP5536", "00000BUP5536"
+  const match = lotplan.match(/(BUP|GTP|CTS)\d+$/i);
   return match ? match[0].toUpperCase() : null;
 }
 
