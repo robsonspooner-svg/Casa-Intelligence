@@ -212,6 +212,19 @@ export default function SubdivisionMap({ lat, lng, parcelGeometry, overlays, zon
                   turf.point(ring[bestEdgeIdx + 1]),
                   { units: 'meters' },
                 );
+                // Geodesic depth — measure from street-edge midpoint to the farthest
+                // parcel vertex projected along the perpendicular axis
+                const streetMidLng = (ring[bestEdgeIdx][0] + ring[bestEdgeIdx + 1][0]) / 2;
+                const streetMidLat = (ring[bestEdgeIdx][1] + ring[bestEdgeIdx + 1][1]) / 2;
+                const rearPt = [
+                  streetMidLng + maxDepth * perpX,
+                  streetMidLat + maxDepth * perpY,
+                ];
+                const depthM = turf.distance(
+                  turf.point([streetMidLng, streetMidLat]),
+                  turf.point(rearPt),
+                  { units: 'meters' },
+                );
                 const reqFrontage = minFrontageM || 10;
                 const frontLotsMax = Math.max(1, Math.floor(frontageM / reqFrontage));
                 const totalAreaM2 = turf.area(feature);
@@ -262,7 +275,13 @@ export default function SubdivisionMap({ lat, lng, parcelGeometry, overlays, zon
                 };
 
                 // --- 4) Layout decision ---
-                if (frontLotsMax >= lotCount) {
+                // Use side-by-side (MODE A) ONLY when:
+                //   - All lots fit with compliant frontage, AND
+                //   - The parcel isn't significantly deeper than wide (ratio < 1.4).
+                // When depth >> frontage, a battle-axe layout is more realistic —
+                // it avoids creating impractically narrow, deep strips.
+                const preferBattleAxe = depthM > frontageM * 1.4 && lotCount >= 2;
+                if (frontLotsMax >= lotCount && !preferBattleAxe) {
                   // MODE A: All lots fit side-by-side — split along the frontage for equal areas
                   const targetPerLot = totalAreaM2 / lotCount;
                   let prevSplit = minAlong;
