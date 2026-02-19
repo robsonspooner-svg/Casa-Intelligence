@@ -278,7 +278,7 @@ export default function SubdivisionResult({
               <button
                 onClick={() => onLotCountChange(Math.max(2, lotCount - 1))}
                 disabled={lotCount <= 2}
-                className="w-8 h-8 rounded-lg border border-border/50 flex items-center justify-center text-text-secondary hover:bg-subtle disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="w-8 h-8 rounded-lg border border-casa-navy/30 bg-casa-navy/5 flex items-center justify-center text-casa-navy hover:bg-casa-navy/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <Minus className="w-3.5 h-3.5" />
               </button>
@@ -286,7 +286,7 @@ export default function SubdivisionResult({
               <button
                 onClick={() => onLotCountChange(Math.min(Math.max(maxLots, 4), lotCount + 1))}
                 disabled={lotCount >= Math.max(maxLots, 4)}
-                className="w-8 h-8 rounded-lg border border-border/50 flex items-center justify-center text-text-secondary hover:bg-subtle disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="w-8 h-8 rounded-lg border border-casa-navy/30 bg-casa-navy/5 flex items-center justify-center text-casa-navy hover:bg-casa-navy/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
               </button>
