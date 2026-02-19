@@ -19,6 +19,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Feasibility is custom-quoted — should go through contact form
+    if (service === 'feasibility') {
+      return NextResponse.json(
+        { error: 'Development Feasibility requires a custom quote. Please contact us directly.' },
+        { status: 400 }
+      );
+    }
+
     const priceId = validateServicePriceId(service);
     const stripe = getStripe();
 

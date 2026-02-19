@@ -333,12 +333,29 @@ export function calculateSubdivisionUplift(
   // Current property LAND value — use statutory land value from the valuation API.
   // This is the unimproved value — what the land alone is worth without buildings.
   // This is the correct baseline for subdivision economics.
+  //
+  // IMPORTANT: QLD statutory valuations can be significantly outdated, especially
+  // in premium areas (e.g. Noosa showing $335K for land worth $3M+). We apply a
+  // sanity check: if the statutory value is less than 25% of the suburb median,
+  // it's likely a stale valuation. In that case we fall back to suburb median.
   let propertyValue: number;
   let valueSource: 'valuation_api' | 'suburb_median';
 
   if (valuation && valuation.landValue > 0) {
-    propertyValue = valuation.landValue;
-    valueSource = 'valuation_api';
+    // Sanity check: statutory value should be a reasonable fraction of suburb median.
+    // Land is typically 40-70% of total property value, so the statutory land value
+    // should be at least ~25% of the suburb median house+land price.
+    // If it's less, the statutory valuation is likely stale/outdated.
+    const minReasonableLandValue = suburbMedian * 0.25;
+    if (valuation.landValue >= minReasonableLandValue) {
+      propertyValue = valuation.landValue;
+      valueSource = 'valuation_api';
+    } else {
+      // Stale statutory valuation — use suburb median as a more realistic baseline.
+      // Land-only is roughly 50-60% of median house+land in premium areas.
+      propertyValue = Math.round(suburbMedian * 0.55);
+      valueSource = 'suburb_median';
+    }
   } else {
     propertyValue = suburbMedian;
     valueSource = 'suburb_median';

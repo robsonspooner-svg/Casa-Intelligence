@@ -86,6 +86,61 @@ function convexHull(points: number[][]): number[][] {
   return stack;
 }
 
+/**
+ * Calculate approximate centroid of a polygon feature and return distance
+ * from a reference point. Used to pick the closest parcel to the geocoded coordinates.
+ */
+function getParcelDistanceFromPoint(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  feature: any,
+  refLat: number,
+  refLng: number,
+): number {
+  const rings = feature.geometry?.rings;
+  if (!rings || rings.length === 0) return Infinity;
+
+  // Compute centroid of the first ring
+  let sumX = 0, sumY = 0, count = 0;
+  for (const coord of rings[0]) {
+    sumX += coord[0];
+    sumY += coord[1];
+    count++;
+  }
+  if (count === 0) return Infinity;
+
+  const cx = sumX / count;
+  const cy = sumY / count;
+
+  // Euclidean distance in degrees (fine for comparison at same locality)
+  return Math.sqrt((cx - refLng) ** 2 + (cy - refLat) ** 2);
+}
+
+/**
+ * Pick the best parcel from a list of candidates near the geocoded point.
+ *
+ * Strategy: prefer residential-sized parcels (<10,000m²) closest to the point.
+ * Only fall back to large parcels if no residential ones are found.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function pickClosestParcel(candidates: any[], refLat: number, refLng: number): any {
+  // Separate into residential-sized and large parcels
+  const residential = candidates.filter((f) => (f.attributes?.lot_area || 0) <= 10000);
+  const pool = residential.length > 0 ? residential : candidates;
+
+  let best = pool[0];
+  let bestDist = getParcelDistanceFromPoint(pool[0], refLat, refLng);
+
+  for (let i = 1; i < pool.length; i++) {
+    const dist = getParcelDistanceFromPoint(pool[i], refLat, refLng);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = pool[i];
+    }
+  }
+
+  return best;
+}
+
 export async function GET(request: NextRequest) {
   const lat = request.nextUrl.searchParams.get('lat');
   const lng = request.nextUrl.searchParams.get('lng');
@@ -114,19 +169,37 @@ export async function GET(request: NextRequest) {
     }
 
     // Find the best parcel — skip road reserves and tiny parcels
-    // Geocoded points often land on the road centerline, hitting the road reserve parcel
+    // Geocoded points often land on the road centerline, hitting the road reserve parcel.
+    // When multiple real parcels overlap at the point (e.g. a small residential lot inside
+    // a large parent lot), prefer the smallest reasonable one — that's the actual allotment.
     let feature = data.features[0];
     let foundRealParcel = false;
-    for (const f of data.features) {
+    const latNum = parseFloat(lat);
+    const lngNum = parseFloat(lng);
+
+    const realParcels = data.features.filter((f: { attributes: Record<string, unknown> }) => {
       const attrs = f.attributes || {};
-      const isRoad = (attrs.tenure && /road/i.test(attrs.tenure)) ||
-                     (attrs.lot_area != null && attrs.lot_area > 0 && attrs.lot_area < 50) ||
+      const isRoad = (attrs.tenure && /road/i.test(String(attrs.tenure))) ||
+                     (attrs.lot_area != null && Number(attrs.lot_area) > 0 && Number(attrs.lot_area) < 50) ||
                      !attrs.lotplan;
-      if (!isRoad && attrs.lotplan && attrs.lot_area > 0) {
-        feature = f;
-        foundRealParcel = true;
-        break;
+      return !isRoad && attrs.lotplan && Number(attrs.lot_area) > 0;
+    });
+
+    if (realParcels.length > 0) {
+      // If there are both small (<10,000m²) and large parcels, prefer the smallest.
+      // This handles the case where a residential lot sits inside a larger parent lot
+      // and both are returned by the point query.
+      const smallParcels = realParcels.filter((f: { attributes: Record<string, unknown> }) => Number(f.attributes?.lot_area || 0) <= 10000);
+      if (smallParcels.length > 0) {
+        // Pick the smallest residential-sized parcel
+        feature = smallParcels.reduce((best: { attributes: Record<string, unknown> }, f: { attributes: Record<string, unknown> }) =>
+          Number(f.attributes?.lot_area || Infinity) < Number(best.attributes?.lot_area || Infinity) ? f : best
+        );
+      } else {
+        // All are large — pick closest to geocoded point
+        feature = pickClosestParcel(realParcels, latNum, lngNum);
       }
+      foundRealParcel = true;
     }
 
     // If point query only returned road reserves, do an envelope query (~55m) to find the real lot
@@ -149,18 +222,22 @@ export async function GET(request: NextRequest) {
         const envData = await queryLayer(CADASTRAL_LAYER, envParams);
 
         if (envData.features && envData.features.length > 0) {
-          // Pick the largest non-road parcel from the envelope results
-          let bestArea = 0;
-          for (const f of envData.features) {
+          // Filter to valid non-road parcels, then pick the closest to the geocoded point.
+          // Previously we picked the largest, but that could grab a massive adjacent lot
+          // (e.g. 107,000m² council land) when the target is a ~400m² residential block.
+          const candidates = envData.features.filter((f: { attributes: Record<string, unknown> }) => {
             const attrs = f.attributes || {};
-            const isRoad = (attrs.tenure && /road/i.test(attrs.tenure)) ||
-                           (attrs.lot_area != null && attrs.lot_area > 0 && attrs.lot_area < 50) ||
+            const isRoad = (attrs.tenure && /road/i.test(String(attrs.tenure))) ||
+                           (attrs.lot_area != null && Number(attrs.lot_area) > 0 && Number(attrs.lot_area) < 50) ||
                            !attrs.lotplan;
-            if (!isRoad && attrs.lotplan && attrs.lot_area > bestArea) {
-              bestArea = attrs.lot_area;
-              feature = f;
-              foundRealParcel = true;
-            }
+            return !isRoad && attrs.lotplan && Number(attrs.lot_area) > 0;
+          });
+
+          if (candidates.length > 0) {
+            // Prefer the closest parcel centroid to the geocoded point
+            const best = pickClosestParcel(candidates, latNum, lngNum);
+            feature = best;
+            foundRealParcel = true;
           }
         }
       } catch (envErr) {

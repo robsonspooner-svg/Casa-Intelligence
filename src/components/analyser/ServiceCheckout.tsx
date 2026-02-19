@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowRight, Check, Loader2 } from 'lucide-react';
+import { ArrowRight, Check, Loader2, MessageSquare } from 'lucide-react';
 import Brand from '@/components/brand/Brand';
+import Link from 'next/link';
 import type { ServiceKey, ServiceTier } from '@/lib/stripe';
 
 interface ServiceCheckoutProps {
@@ -161,26 +162,40 @@ export default function ServiceCheckout({ services, address }: ServiceCheckoutPr
                 ))}
               </ul>
 
-              <button
-                onClick={() => handleCheckout(key)}
-                disabled={isLoading || !!loadingService}
-                className={`w-full py-2.5 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 ${
-                  isPrimary
-                    ? 'bg-white text-casa-navy hover:bg-white/90'
-                    : 'bg-casa-navy text-white hover:bg-casa-navy-light'
-                }`}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Redirecting...
-                  </>
-                ) : (
-                  <>
-                    Get Started <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
+              {/* Feasibility = custom quote → link to contact form instead of Stripe */}
+              {key === 'feasibility' ? (
+                <Link
+                  href={`/contact?service=feasibility${address ? `&address=${encodeURIComponent(address)}` : ''}`}
+                  className={`w-full py-2.5 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-colors ${
+                    isPrimary
+                      ? 'bg-white text-casa-navy hover:bg-white/90'
+                      : 'bg-casa-navy text-white hover:bg-casa-navy-light'
+                  }`}
+                >
+                  Request a Quote <MessageSquare className="w-4 h-4" />
+                </Link>
+              ) : (
+                <button
+                  onClick={() => handleCheckout(key)}
+                  disabled={isLoading || !!loadingService}
+                  className={`w-full py-2.5 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 ${
+                    isPrimary
+                      ? 'bg-white text-casa-navy hover:bg-white/90'
+                      : 'bg-casa-navy text-white hover:bg-casa-navy-light'
+                  }`}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Redirecting...
+                    </>
+                  ) : (
+                    <>
+                      Get Started <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           );
         })}

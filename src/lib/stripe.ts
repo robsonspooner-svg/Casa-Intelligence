@@ -147,5 +147,11 @@ export function validateServicePriceId(service: string): string {
   if (!priceId) {
     throw new Error(`Unknown service: ${service}`);
   }
+  // Detect placeholder/unconfigured price IDs
+  if (priceId.startsWith('price_') && !priceId.startsWith('price_1')) {
+    throw new Error(
+      `Stripe is not yet configured for ${SERVICE_TIERS[service as ServiceKey]?.name || service}. Please contact us directly to get started.`
+    );
+  }
   return priceId;
 }

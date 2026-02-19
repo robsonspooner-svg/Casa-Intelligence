@@ -5,10 +5,20 @@ import Card from '@/components/ui/Card';
 import FadeIn from '@/components/ui/FadeIn';
 import SectionHeading from '@/components/ui/SectionHeading';
 import Container from '@/components/layout/Container';
-import { ArrowRight, FileSearch, Scissors, Building2, Users } from 'lucide-react';
+import {
+  ArrowRight,
+  FileSearch,
+  Scissors,
+  Building2,
+  Users,
+  HardHat,
+  Network,
+  BadgeDollarSign,
+  Handshake,
+} from 'lucide-react';
 import Link from 'next/link';
 
-const services = [
+const coreServices = [
   {
     icon: FileSearch,
     title: 'Preliminary Report',
@@ -52,18 +62,37 @@ const services = [
     ],
     href: '/services#feasibility',
   },
+];
+
+const extendedServices = [
+  {
+    icon: HardHat,
+    title: 'Pre-Construction Management',
+    description: 'Project oversight from DA approval through to construction-ready handoff.',
+    href: '/services#beyond',
+  },
+  {
+    icon: Network,
+    title: 'Consultant Network',
+    description: 'Vetted surveyors, planners, engineers, and conveyancers across SEQ.',
+    href: '/services#beyond',
+  },
+  {
+    icon: BadgeDollarSign,
+    title: 'Subdivision Sales',
+    description: 'We manage the sale of your new lots and stand behind our projected values.',
+    href: '/services#beyond',
+  },
+  {
+    icon: Handshake,
+    title: 'Joint Ventures & Funding',
+    description: 'Capital partnerships for sites with clear development potential.',
+    href: '/services#beyond',
+  },
   {
     icon: Users,
     title: 'For Agents',
-    price: 'Contact for pricing',
-    description:
-      'White-label subdivision and feasibility tools for your agency website. Generate qualified leads and differentiate your brand with development intelligence.',
-    features: [
-      'Subdivision eligibility checker',
-      'Development feasibility tool',
-      'Lead capture & CRM integration',
-      'Your brand or co-branded',
-    ],
+    description: 'White-label subdivision and feasibility tools for your agency website.',
     href: '/for-agents',
   },
 ];
@@ -75,11 +104,12 @@ export default function ServicesOverview() {
         <SectionHeading
           badge="Our Services"
           title={<><Brand>Intelligence</Brand> applied at every stage</>}
-          subtitle="From a quick feasibility check to full project delivery. Every service backed by our proprietary intelligence engine."
+          subtitle="From a quick feasibility check to lot sales and project delivery. Every service backed by our proprietary intelligence engine."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services.map((service, index) => (
+        {/* Core services — 3 column cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {coreServices.map((service, index) => (
             <FadeIn key={service.title} delay={index * 0.1}>
               <Card hover className="h-full flex flex-col">
                 <div className="flex items-start justify-between mb-4">
@@ -121,6 +151,25 @@ export default function ServicesOverview() {
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </Card>
+            </FadeIn>
+          ))}
+        </div>
+
+        {/* Extended services — compact row */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          {extendedServices.map((service, index) => (
+            <FadeIn key={service.title} delay={0.3 + index * 0.05}>
+              <Link href={service.href} className="group block">
+                <div className="rounded-xl border border-border/50 bg-surface p-4 h-full hover:border-casa-navy/20 hover:shadow-sm transition-all">
+                  <service.icon className="w-5 h-5 text-casa-navy mb-2.5" />
+                  <h4 className="text-sm font-semibold text-text-primary mb-1 leading-tight">
+                    {service.title}
+                  </h4>
+                  <p className="text-xs text-text-tertiary leading-relaxed">
+                    {service.description}
+                  </p>
+                </div>
+              </Link>
             </FadeIn>
           ))}
         </div>

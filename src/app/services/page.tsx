@@ -16,31 +16,37 @@ import {
   Users,
   Layers,
   ShieldCheck,
+  HardHat,
+  Network,
+  BadgeDollarSign,
+  Handshake,
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Services | Subdivision, Feasibility & Agent Intelligence | SEQ',
+  title: 'Services | Subdivision, Feasibility, Pre-Construction & More | SEQ',
   description:
-    'Preliminary reports from $1,500, subdivision consulting from $10,000, development feasibility studies custom-quoted. White-label intelligence tools for real estate agents. South East Queensland.',
+    'Preliminary reports from $1,500, subdivision consulting from $10,000, development feasibility, pre-construction management, consultant network, subdivision sales, and development JV opportunities. South East Queensland.',
   keywords: [
     'development feasibility report sunshine coast',
     'subdivision package queensland',
     'preliminary report property',
-    'pre-development management queensland',
+    'pre-construction management queensland',
     'development advisory services',
     'property development consulting sunshine coast',
     'feasibility study sunshine coast',
     'real estate agent tools',
-    'white label property tools',
+    'subdivision sales queensland',
+    'development joint venture SEQ',
+    'property consultant network SEQ',
     'property development services SEQ',
   ],
   alternates: {
     canonical: 'https://casaintelligence.com.au/services',
   },
   openGraph: {
-    title: 'Services | Subdivision, Feasibility & Agent Intelligence',
+    title: 'Services | Subdivision, Feasibility, Pre-Construction & More',
     description:
-      'Preliminary reports from $1,500, subdivision consulting from $10,000, development feasibility custom-quoted. Plus white-label intelligence for agents.',
+      'Full-service property intelligence: preliminary reports, subdivision consulting, feasibility studies, pre-construction management, consultant network, subdivision sales, and JV funding.',
     type: 'website',
     url: 'https://casaintelligence.com.au/services',
   },
@@ -84,6 +90,30 @@ const faqJsonLd = {
     },
     {
       '@type': 'Question',
+      name: 'What is Pre-Construction Management?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Pre-Construction Management covers the project oversight phase between DA approval and construction commencement. We coordinate consultants, manage council conditions, oversee infrastructure design, and ensure your project is construction-ready \u2014 so you can hand off to your builder with confidence.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can you help sell my subdivided lots?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. Our Subdivision Sales service manages the sale of your newly created lots. Because we produced the original feasibility and uplift projections, we have direct accountability for achieving the values we forecast. We coordinate with agents, manage campaigns, and ensure you realise the returns our analysis projected.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do you offer development joint ventures or funding?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'We selectively consider joint venture partnerships and development funding opportunities on a case-by-case basis. If you have a strong site with clear development potential, contact us to discuss how we might partner on the project.',
+      },
+    },
+    {
+      '@type': 'Question',
       name: 'What areas do you service?',
       acceptedAnswer: {
         '@type': 'Answer',
@@ -118,6 +148,40 @@ const feasibilityFeatures = [
   'Market analysis & end-product positioning',
   'Risk register & constraint summary',
   'Definitive go/no-go recommendation',
+];
+
+const preConstructionFeatures = [
+  'Consultant coordination & oversight',
+  'Council condition management',
+  'Infrastructure design oversight',
+  'Timeline & milestone tracking',
+  'Cost monitoring & reporting',
+  'Construction-ready handoff package',
+];
+
+const consultantNetworkFeatures = [
+  'Vetted SEQ-specialist consultants',
+  'Surveyors, planners & engineers',
+  'Conveyancers & solicitors',
+  'Civil & structural engineers',
+  'Competitive quotes from our panel',
+  'Single point of coordination',
+];
+
+const subdivisionSalesFeatures = [
+  'Accountability to our projected values',
+  'Agent selection & campaign management',
+  'Market timing & pricing strategy',
+  'Buyer qualification & negotiation',
+  'Settlement coordination',
+  'Performance reporting against forecast',
+];
+
+const jvFundingFeatures = [
+  'Equity or profit-share structures',
+  'Sites assessed by our intelligence engine',
+  'Risk-aligned capital partnerships',
+  'Case-by-case evaluation',
 ];
 
 const agentFeatures = [
@@ -385,16 +449,158 @@ export default function ServicesPage() {
         </Container>
       </section>
 
+      {/* Beyond the Report — extended services */}
+      <section className="section-padding bg-canvas" id="beyond">
+        <Container variant="wide">
+          <SectionHeading
+            badge="Beyond the Report"
+            title="We stay with you through delivery"
+            subtitle="Intelligence doesn't stop at a report. We offer hands-on services to help you execute, sell, and maximise returns."
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            {/* Pre-Construction Management */}
+            <FadeIn>
+              <div className="rounded-2xl border border-border/50 bg-surface p-6 md:p-8 h-full flex flex-col">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-casa-navy/5 flex items-center justify-center flex-shrink-0">
+                    <HardHat className="w-5 h-5 text-casa-navy" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-xl text-text-primary">Pre-Construction Management</h3>
+                    <p className="text-xs mt-0.5 text-text-tertiary">DA approval to construction-ready</p>
+                  </div>
+                </div>
+                <p className="text-2xl font-serif font-bold text-casa-navy mb-4">Custom quote</p>
+                <p className="text-sm text-text-secondary leading-relaxed mb-6">
+                  The phase between DA approval and breaking ground is where projects stall, blow budgets, or miss conditions.
+                  We manage this critical window — coordinating consultants, tracking council conditions, overseeing infrastructure
+                  design, and delivering a construction-ready package to your builder.
+                </p>
+                <ul className="space-y-2.5 mb-8 flex-1">
+                  {preConstructionFeatures.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-text-secondary">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button href="/contact" size="lg" className="w-full justify-center">
+                  Enquire Now <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </FadeIn>
+
+            {/* Consultant Network */}
+            <FadeIn delay={0.1}>
+              <div className="rounded-2xl border border-border/50 bg-surface p-6 md:p-8 h-full flex flex-col">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-casa-navy/5 flex items-center justify-center flex-shrink-0">
+                    <Network className="w-5 h-5 text-casa-navy" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-xl text-text-primary">Consultant Network</h3>
+                    <p className="text-xs mt-0.5 text-text-tertiary">Vetted specialists, one point of contact</p>
+                  </div>
+                </div>
+                <p className="text-2xl font-serif font-bold text-casa-navy mb-4">No cost to you</p>
+                <p className="text-sm text-text-secondary leading-relaxed mb-6">
+                  Finding the right surveyor, planner, or engineer for your project shouldn&apos;t be a gamble.
+                  Our curated network of SEQ-specialist consultants have been vetted through hundreds of projects.
+                  We match you with the right professionals and coordinate the engagement — at no additional cost to you.
+                </p>
+                <ul className="space-y-2.5 mb-8 flex-1">
+                  {consultantNetworkFeatures.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-text-secondary">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button href="/contact" size="lg" className="w-full justify-center">
+                  Get Connected <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </FadeIn>
+
+            {/* Subdivision Sales */}
+            <FadeIn delay={0.2}>
+              <div className="rounded-2xl border border-border/50 bg-surface p-6 md:p-8 h-full flex flex-col">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-casa-navy/5 flex items-center justify-center flex-shrink-0">
+                    <BadgeDollarSign className="w-5 h-5 text-casa-navy" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-xl text-text-primary">Subdivision Sales</h3>
+                    <p className="text-xs mt-0.5 text-text-tertiary">We stand behind our numbers</p>
+                  </div>
+                </div>
+                <p className="text-2xl font-serif font-bold text-casa-navy mb-4">Commission-based</p>
+                <p className="text-sm text-text-secondary leading-relaxed mb-6">
+                  We produced your feasibility projections — and we stand behind them. Our Subdivision Sales service
+                  manages the sale of your newly created lots, from agent selection and campaign strategy through to
+                  settlement. Because we forecast the values, we have direct accountability for achieving them.
+                </p>
+                <ul className="space-y-2.5 mb-8 flex-1">
+                  {subdivisionSalesFeatures.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-text-secondary">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button href="/contact" size="lg" className="w-full justify-center">
+                  Discuss Sales Strategy <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </FadeIn>
+
+            {/* JV / Funding */}
+            <FadeIn delay={0.3}>
+              <div className="rounded-2xl border border-casa-navy bg-casa-navy text-white p-6 md:p-8 h-full flex flex-col">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <Handshake className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-xl text-white">Joint Ventures & Funding</h3>
+                    <p className="text-xs mt-0.5 text-white/60">Capital partnerships for the right projects</p>
+                  </div>
+                </div>
+                <p className="text-2xl font-serif font-bold text-white mb-4">Enquire</p>
+                <p className="text-sm text-white/70 leading-relaxed mb-6">
+                  Have a strong site with clear development potential but need a capital partner? We selectively
+                  consider joint venture partnerships and funding opportunities on a case-by-case basis. Every
+                  opportunity is assessed through our intelligence engine before we commit — the same rigour
+                  we apply to our clients&apos; projects, we apply to our own capital.
+                </p>
+                <ul className="space-y-2.5 mb-8 flex-1">
+                  {jvFundingFeatures.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-white/90">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button href="/contact" size="lg" className="w-full justify-center bg-white text-casa-navy hover:bg-white/90">
+                  Submit Your Opportunity <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </FadeIn>
+          </div>
+        </Container>
+      </section>
+
       {/* How it works */}
-      <section className="section-padding bg-canvas">
+      <section className="section-padding bg-surface">
         <Container variant="wide">
           <SectionHeading
             badge="Process"
             title="How it works"
-            subtitle="From first search to final report, our process is designed for speed and clarity."
+            subtitle="From first search to final sale, our process is designed for speed and clarity."
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {[
               {
                 step: '01',
@@ -406,19 +612,19 @@ export default function ServicesPage() {
                 step: '02',
                 title: 'Order a report',
                 description:
-                  'Choose a Preliminary Report ($1,500) to confirm the opportunity before committing further.',
+                  'Start with a Preliminary Report ($1,500) to confirm the opportunity before committing further.',
               },
               {
                 step: '03',
-                title: 'Get your assessment',
+                title: 'Execute with confidence',
                 description:
-                  'Receive a comprehensive, data-driven assessment within 5-7 business days.',
+                  'Upgrade to full consulting, pre-construction management, and our consultant network to deliver your project.',
               },
               {
                 step: '04',
-                title: 'Move forward',
+                title: 'Realise the value',
                 description:
-                  'Upgrade to a full Subdivision Package or Development Feasibility if the numbers work.',
+                  'Our Subdivision Sales service ensures you achieve the returns our analysis projected.',
               },
             ].map((item, i) => (
               <FadeIn key={item.step} delay={i * 0.1}>
