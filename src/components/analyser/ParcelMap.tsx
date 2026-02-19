@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Loader2, MapPin } from 'lucide-react';
+import { useCtrlScrollZoom, CtrlScrollTooltip } from '@/lib/useCtrlScrollZoom';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 interface ParcelMapProps {
@@ -16,6 +17,7 @@ export default function ParcelMap({ lat, lng, parcelGeometry }: ParcelMapProps) 
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { containerRef: scrollRef, showTooltip, setMap } = useCtrlScrollZoom();
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -54,6 +56,8 @@ export default function ParcelMap({ lat, lng, parcelGeometry }: ParcelMapProps) 
           zoom: 17,
           attributionControl: false,
         });
+
+        setMap(map);
 
         map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
 
@@ -135,7 +139,8 @@ export default function ParcelMap({ lat, lng, parcelGeometry }: ParcelMapProps) 
   }
 
   return (
-    <div className="relative rounded-card overflow-hidden border border-border/50 h-full flex flex-col">
+    <div ref={scrollRef} className="relative rounded-card overflow-hidden border border-border/50 h-full flex flex-col">
+      {showTooltip && <CtrlScrollTooltip />}
       <div ref={mapContainer} className="w-full flex-1 min-h-[300px]" />
       {!isLoaded && (
         <div className="absolute inset-0 bg-surface flex items-center justify-center">

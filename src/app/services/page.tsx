@@ -10,35 +10,37 @@ import {
   ArrowRight,
   CheckCircle2,
   ClipboardCheck,
-  FileText,
+  FileSearch,
+  Scissors,
+  Building2,
+  Users,
   Layers,
   ShieldCheck,
-  TrendingUp,
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Development Feasibility & Advisory Services | Sunshine Coast',
+  title: 'Services | Subdivision, Feasibility & Agent Intelligence | SEQ',
   description:
-    'Development feasibility reports, pre-development management, and development partnership services on the Sunshine Coast. Planning, architecture, and financial analysis integrated into one assessment.',
+    'Preliminary reports from $1,500, subdivision consulting from $10,000, development feasibility studies custom-quoted. White-label intelligence tools for real estate agents. South East Queensland.',
   keywords: [
     'development feasibility report sunshine coast',
+    'subdivision package queensland',
+    'preliminary report property',
     'pre-development management queensland',
     'development advisory services',
     'property development consulting sunshine coast',
     'feasibility study sunshine coast',
-    'development partnership queensland',
-    'planning assessment sunshine coast',
-    'architectural feasibility report',
-    'development site assessment',
+    'real estate agent tools',
+    'white label property tools',
     'property development services SEQ',
   ],
   alternates: {
     canonical: 'https://casaintelligence.com.au/services',
   },
   openGraph: {
-    title: 'Development Feasibility & Advisory Services | Sunshine Coast',
+    title: 'Services | Subdivision, Feasibility & Agent Intelligence',
     description:
-      'Feasibility reports from $8,000 in 5-7 days. Planning, architecture, and financial analysis in one integrated assessment.',
+      'Preliminary reports from $1,500, subdivision consulting from $10,000, development feasibility custom-quoted. Plus white-label intelligence for agents.',
     type: 'website',
     url: 'https://casaintelligence.com.au/services',
   },
@@ -50,75 +52,125 @@ const faqJsonLd = {
   mainEntity: [
     {
       '@type': 'Question',
-      name: 'How much does a development feasibility report cost on the Sunshine Coast?',
+      name: 'What is a Preliminary Report?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Casa Intelligence feasibility assessments start at $8,000 and are delivered in 5-7 business days. This compares to $30,000-$50,000 and 4-8 weeks when engaging three separate consultants (planner, architect, and quantity surveyor).',
+        text: 'A Preliminary Report is a desktop assessment that confirms your property\'s zoning, identifies planning overlays, estimates lot yield potential, and provides a high-level feasibility summary. It costs $1,500 + GST and is delivered within 5 business days.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What is included in a development feasibility report?',
+      name: 'How much does subdivision consulting cost?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Our reports include planning scheme analysis and zoning assessment, site constraint and overlay mapping, architectural yield study with concept massing, infrastructure and services capacity assessment, financial pro forma with sensitivity analysis, market analysis, risk register, and a definitive go/no-go recommendation.',
+        text: 'Our Subdivision Consulting service costs $10,000 + GST and provides expert guidance through the entire subdivision process \u2014 from DA strategy and council liaison to planning compliance and coordination of third-party specialists through to title registration.',
       },
     },
     {
       '@type': 'Question',
-      name: 'How long does a feasibility assessment take?',
+      name: 'What is included in a Development Feasibility study?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Our integrated feasibility assessments are delivered in 5-7 business days. This is possible because our proprietary intelligence system pre-processes every site against planning data, overlays, construction costs, and market data before an analyst begins their review.',
+        text: 'Our Development Feasibility studies include detailed yield study and massing, financial modelling with sensitivity analysis, infrastructure assessment, market analysis, risk register, and a definitive go/no-go recommendation. Each study is scoped and priced to match your project\u2019s complexity \u2014 contact us for a tailored quote.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What areas does Casa Intelligence service?',
+      name: 'Do you offer tools for real estate agents?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Casa Intelligence specialises in the Sunshine Coast and the broader South East Queensland corridor. Our deep local knowledge of Sunshine Coast planning schemes, council processes, construction costs, and market conditions is our core advantage.',
+        text: 'Yes. Our For Agents offering lets real estate agencies embed Casa Intelligence subdivision and development feasibility tools directly on their website. Available as white-label with your branding, it generates qualified leads and differentiates your agency.',
       },
     },
     {
       '@type': 'Question',
-      name: 'How is Casa Intelligence different from hiring a planner, architect, and QS separately?',
+      name: 'What areas do you service?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'When you engage three separate consultants, each works in isolation making assumptions about the other disciplines. The result is often three reports that do not account for each other, with costly gaps between them. Our integrated assessment cross-references planning, architecture, and financial analysis from the start, producing a single coherent assessment that reflects what can actually be built, approved, and sold on your specific site.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'Do I need a feasibility report before buying a development site?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'If you are considering spending more than $500,000 on land, looking at a site with planning overlays, or planning a multi-dwelling development, a feasibility assessment before committing capital is strongly recommended. The cost of the assessment is trivial compared to the risk of discovering constraints after you have committed.',
+        text: 'Casa Intelligence services all of South East Queensland including the Sunshine Coast, Brisbane, Gold Coast, Moreton Bay, Logan, Redland, Noosa, and surrounding areas.',
       },
     },
   ],
 };
 
-const feasibilityDeliverables = [
-  'Planning scheme analysis and zoning assessment',
-  'Site constraint and overlay mapping',
-  'Architectural yield study with concept massing',
-  'Infrastructure and services capacity assessment',
-  'Financial pro forma with sensitivity analysis',
-  'Market analysis and end-product positioning',
-  'Risk register and constraint summary',
-  'Go/no-go recommendation with clear reasoning',
+const preliminaryFeatures = [
+  'Zoning & overlay confirmation',
+  'Lot yield estimate',
+  'Constraint identification',
+  'High-level feasibility summary',
+  'Delivered within 5 business days',
 ];
 
-const managementBenefits = [
-  'Single point of accountability for the entire pre-construction phase',
-  'Consultant procurement at competitive rates through established relationships',
-  'Council liaison: we know the process, the people, and the pitfalls',
-  'DA preparation that gets approved first time, avoiding costly delays',
-  'Builder tendering with local market intelligence',
-  'Budget and timeline protection with milestone tracking',
-  'Risk mitigation: problems identified and resolved before they cost you',
-  'Regular reporting so you always know where your project stands',
+const subdivisionFeatures = [
+  'Everything in Preliminary Report',
+  'DA strategy & lodgement support',
+  'Council liaison & negotiation',
+  'Planning advice & compliance guidance',
+  'End-to-end consulting to title registration',
+  'Coordination of third-party specialists',
+];
+
+const feasibilityFeatures = [
+  'Everything in Preliminary Report',
+  'Detailed yield study & concept massing',
+  'Financial modelling & sensitivity analysis',
+  'Infrastructure & services assessment',
+  'Market analysis & end-product positioning',
+  'Risk register & constraint summary',
+  'Definitive go/no-go recommendation',
+];
+
+const agentFeatures = [
+  'Subdivision eligibility checker',
+  'Development feasibility tool',
+  'Zoning and overlay detection',
+  'Uplift value calculator',
+  'Lead capture & CRM integration',
+  'White-label with your agency brand',
+  'Listed property integration',
+  'Dedicated onboarding support',
+];
+
+const services = [
+  {
+    id: 'preliminary',
+    icon: FileSearch,
+    name: 'Preliminary Report',
+    price: '$1,500 + GST',
+    tagline: 'Know before you commit',
+    description:
+      'A desktop assessment that tells you whether your property has subdivision or development potential — before you engage consultants or commit capital. We confirm zoning, identify overlays, estimate lot yield, and provide a high-level feasibility summary.',
+    features: preliminaryFeatures,
+    cta: 'Order Preliminary Report',
+    ctaHref: '/contact',
+    highlight: false,
+  },
+  {
+    id: 'subdivision',
+    icon: Scissors,
+    name: 'Subdivision Consulting',
+    price: '$10,000 + GST',
+    tagline: 'Expert guidance from DA to title',
+    description:
+      'Our subdivision consulting service guides you through every stage of the process. We handle DA strategy, council liaison, planning compliance, and coordinate the specialists you need \u2014 providing expert oversight from initial concept through to new title registration.',
+    features: subdivisionFeatures,
+    cta: 'Get Started',
+    ctaHref: '/contact',
+    highlight: true,
+  },
+  {
+    id: 'feasibility',
+    icon: Building2,
+    name: 'Development Feasibility',
+    price: 'Custom quote',
+    tagline: 'Tailored to your project',
+    description:
+      'Every development project is different, and our feasibility studies are scoped to match. Our intelligence engine cross-references planning data, construction cost indices, comparable sales, and overlay interactions to produce a feasibility assessment with accuracy no manual process can match. Contact us for a proposal tailored to your site.',
+    features: feasibilityFeatures,
+    cta: 'Request a Quote',
+    ctaHref: '/contact',
+    highlight: false,
+  },
 ];
 
 export default function ServicesPage() {
@@ -128,6 +180,7 @@ export default function ServicesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
+
       {/* Hero */}
       <section className="gradient-hero pt-32 pb-20 md:pt-40 md:pb-28">
         <Container variant="wide">
@@ -139,66 +192,168 @@ export default function ServicesPage() {
             </FadeIn>
             <FadeIn delay={0.1}>
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white leading-[1.1] mb-6">
-                Development feasibility
+                <Brand>Intelligence</Brand>-powered
                 <br />
-                <span className="text-white/60">and advisory services</span>
+                <span className="text-white/60">property services</span>
               </h1>
             </FadeIn>
             <FadeIn delay={0.2}>
               <p className="text-lg md:text-xl text-white/50 leading-relaxed max-w-2xl">
-                Every dollar you spend on development should be informed by proprietary
-                <Brand>intelligence</Brand> that no other advisory firm can access. We make sure it is,
-                from first enquiry through to DA approval.
+                From a quick feasibility check to end-to-end subdivision delivery. Every service
+                is backed by our proprietary <Brand>intelligence</Brand> engine that analyses hundreds of
+                data points across South East Queensland.
               </p>
             </FadeIn>
           </div>
         </Container>
       </section>
 
-      {/* Service 1: Feasibility */}
-      <section className="section-padding bg-canvas" id="feasibility">
+      {/* Pricing cards */}
+      <section className="section-padding bg-canvas">
+        <Container variant="wide">
+          <SectionHeading
+            badge="Pricing"
+            title="Choose your service"
+            subtitle="Start with a Preliminary Report to understand your site, then upgrade to a full package if the numbers work."
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            {services.map((service, index) => (
+              <FadeIn key={service.id} delay={index * 0.1}>
+                <div
+                  className={`rounded-2xl border p-6 md:p-8 h-full flex flex-col ${
+                    service.highlight
+                      ? 'bg-casa-navy text-white border-casa-navy shadow-elevated relative'
+                      : 'bg-surface border-border/50'
+                  }`}
+                >
+                  {service.highlight && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-semibold tracking-wider uppercase px-3 py-1 rounded-full bg-gold text-white">
+                      Most Popular
+                    </span>
+                  )}
+
+                  <div className="flex items-start gap-3 mb-4">
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                        service.highlight ? 'bg-white/10' : 'bg-casa-navy/5'
+                      }`}
+                    >
+                      <service.icon
+                        className={`w-5 h-5 ${service.highlight ? 'text-white' : 'text-casa-navy'}`}
+                      />
+                    </div>
+                    <div>
+                      <h3
+                        className={`font-serif text-xl ${
+                          service.highlight ? 'text-white' : 'text-text-primary'
+                        }`}
+                      >
+                        {service.name}
+                      </h3>
+                      <p
+                        className={`text-xs mt-0.5 ${
+                          service.highlight ? 'text-white/60' : 'text-text-tertiary'
+                        }`}
+                      >
+                        {service.tagline}
+                      </p>
+                    </div>
+                  </div>
+
+                  <p
+                    className={`text-2xl font-serif font-bold mb-4 ${
+                      service.highlight ? 'text-white' : 'text-casa-navy'
+                    }`}
+                  >
+                    {service.price}
+                  </p>
+
+                  <p
+                    className={`text-sm leading-relaxed mb-6 ${
+                      service.highlight ? 'text-white/70' : 'text-text-secondary'
+                    }`}
+                  >
+                    {service.description}
+                  </p>
+
+                  <ul className="space-y-2.5 mb-8 flex-1">
+                    {service.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-2.5">
+                        <CheckCircle2
+                          className={`w-4 h-4 flex-shrink-0 mt-0.5 ${
+                            service.highlight ? 'text-emerald-400' : 'text-emerald-500'
+                          }`}
+                        />
+                        <span
+                          className={`text-sm ${
+                            service.highlight ? 'text-white/90' : 'text-text-secondary'
+                          }`}
+                        >
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Button
+                    href={service.ctaHref}
+                    size="lg"
+                    className={`w-full justify-center ${
+                      service.highlight
+                        ? 'bg-white text-casa-navy hover:bg-white/90'
+                        : ''
+                    }`}
+                  >
+                    {service.cta}
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* For Agents */}
+      <section className="section-padding bg-surface" id="for-agents">
         <Container variant="wide">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
             <FadeIn direction="left">
               <div>
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-12 h-12 rounded-xl bg-casa-navy/5 flex items-center justify-center">
-                    <ClipboardCheck className="w-6 h-6 text-casa-navy" />
+                    <Users className="w-6 h-6 text-casa-navy" />
                   </div>
                   <h2 className="font-serif text-2xl md:text-3xl">
-                    Development Feasibility
+                    For Real Estate Agents
                   </h2>
                 </div>
 
-                <p className="text-sm font-semibold text-casa-navy mb-4">From $8,000 | Delivered in 5-7 business days</p>
-
-                <p className="text-text-secondary leading-relaxed mb-4">
-                  Most developers spend $30,000-$50,000 across three separate consultants and
-                  wait four to eight weeks just to understand whether a site has potential.
-                  Many discover constraints too late, after they&apos;ve already committed capital.
+                <p className="text-sm font-semibold text-casa-navy mb-4">
+                  White-label intelligence tools for your agency
                 </p>
 
                 <p className="text-text-secondary leading-relaxed mb-4">
-                  Our feasibility assessment integrates planning, architecture, and financial
-                  analysis into a single report. You get a clear, actionable picture of what
-                  your site can deliver, what it will cost, and whether the numbers work
-                  before you spend another dollar.
+                  Embed <Brand>Casa Intelligence</Brand> subdivision and development feasibility tools
+                  directly on your agency website. Every property listing becomes a lead generation
+                  opportunity when vendors and buyers can instantly check development potential.
                 </p>
 
                 <p className="text-text-secondary leading-relaxed mb-4">
-                  Our proprietary <Brand>intelligence</Brand> engine pre-processes every site before an analyst
-                  begins by cross-referencing planning data, overlay interactions, comparable sales,
-                  construction cost indices, and council decision patterns. The result is a
-                  feasibility assessment with a depth and accuracy that manual analysis cannot replicate.
+                  Available as a fully white-labelled solution with your agency branding, or
+                  as a co-branded tool that connects your clients directly to our services.
+                  Either way, you generate qualified leads that no other agency in your market
+                  can offer.
                 </p>
 
                 <p className="text-text-secondary leading-relaxed mb-8">
-                  The result isn&apos;t just a report. It&apos;s a decision-making tool that protects
-                  you from costly surprises and positions you to move with confidence.
+                  Setup takes less than a day. We handle all the technical integration and
+                  provide dedicated onboarding for your team.
                 </p>
 
-                <Button href="/contact" size="lg">
-                  Request a Feasibility Assessment
+                <Button href="/for-agents" size="lg">
+                  Learn More
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </div>
@@ -207,123 +362,75 @@ export default function ServicesPage() {
             <FadeIn direction="right" delay={0.15}>
               <Card className="p-8">
                 <div className="flex items-center gap-2 mb-6">
-                  <FileText className="w-5 h-5 text-casa-navy" />
-                  <h3 className="font-semibold">What You Receive</h3>
-                </div>
-                <ul className="space-y-3">
-                  {feasibilityDeliverables.map((item) => (
-                    <li key={item} className="flex items-start gap-3 text-sm text-text-secondary">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-            </FadeIn>
-          </div>
-        </Container>
-      </section>
-
-      {/* Service 2: Pre-Development Management */}
-      <section className="section-padding bg-surface" id="management">
-        <Container variant="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-            <FadeIn direction="left" className="lg:order-2">
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-casa-navy/5 flex items-center justify-center">
-                    <Layers className="w-6 h-6 text-casa-navy" />
-                  </div>
-                  <h2 className="font-serif text-2xl md:text-3xl">
-                    Pre-Development Management
-                  </h2>
-                </div>
-
-                <p className="text-text-secondary leading-relaxed mb-4">
-                  The period between buying a site and breaking ground is the most complex
-                  and highest-risk phase of any development. One wrong consultant, one missed
-                  council requirement, one avoidable delay can cost you hundreds of thousands.
-                </p>
-
-                <p className="text-text-secondary leading-relaxed mb-4">
-                  We act as your single point of accountability for this entire phase:
-                  procuring the right consultants, managing council interactions, preparing
-                  your DA to approval standard, and tendering builders who actually deliver
-                  on price and timeline.
-                </p>
-
-                <p className="text-text-secondary leading-relaxed mb-4">
-                  Our system continuously tracks council decision timelines, consultant
-                  performance metrics, and approval patterns, giving us <Brand>intelligence</Brand> that
-                  accelerates approvals and protects your budget.
-                </p>
-
-                <p className="text-text-secondary leading-relaxed mb-8">
-                  You stay focused on the opportunity. We handle the complexity, protect your
-                  budget, and make sure nothing falls through the cracks.
-                </p>
-
-                <Button href="/contact" size="lg">
-                  Discuss Your Project
-                  <ArrowRight className="w-5 h-5" />
-                </Button>
-              </div>
-            </FadeIn>
-
-            <FadeIn direction="right" delay={0.15} className="lg:order-1">
-              <Card className="p-8">
-                <div className="flex items-center gap-2 mb-6">
                   <ShieldCheck className="w-5 h-5 text-casa-navy" />
-                  <h3 className="font-semibold">How We Protect Your Investment</h3>
+                  <h3 className="font-semibold">What Your Agency Gets</h3>
                 </div>
                 <ul className="space-y-3">
-                  {managementBenefits.map((item) => (
+                  {agentFeatures.map((item) => (
                     <li key={item} className="flex items-start gap-3 text-sm text-text-secondary">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
                       {item}
                     </li>
                   ))}
                 </ul>
+                <div className="mt-6 pt-6 border-t border-border/50">
+                  <p className="text-sm text-text-secondary">
+                    Contact us for agency pricing. Volume discounts available for multi-office
+                    deployments.
+                  </p>
+                </div>
               </Card>
             </FadeIn>
           </div>
         </Container>
       </section>
 
-      {/* Service 3: Development Partnerships */}
-      <section className="section-padding bg-canvas" id="development">
+      {/* How it works */}
+      <section className="section-padding bg-canvas">
         <Container variant="wide">
-          <div className="max-w-3xl mx-auto text-center">
-            <FadeIn>
-              <div className="w-12 h-12 rounded-xl bg-casa-navy/5 flex items-center justify-center mx-auto mb-6">
-                <TrendingUp className="w-6 h-6 text-casa-navy" />
-              </div>
-              <span className="inline-block text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-full bg-gold/10 text-gold mb-4">
-                Coming 2027
-              </span>
-              <h2 className="font-serif text-2xl md:text-3xl mb-4">
-                Development Partnerships
-              </h2>
-              <p className="text-text-secondary leading-relaxed mb-4">
-                For high-potential sites, we go beyond advisory. We co-invest alongside you,
-                contributing capital, expertise, and hands-on management to deliver the
-                development together.
-              </p>
-              <p className="text-text-secondary leading-relaxed mb-4">
-                This means our incentives are fully aligned with yours. We succeed when
-                you succeed. Our deep local knowledge of construction costs, market pricing,
-                and council requirements means your project is managed by people who have
-                real skin in the game.
-              </p>
-              <p className="text-text-secondary leading-relaxed mb-8">
-                If you have a site with strong fundamentals and are looking for a development
-                partner with genuine Sunshine Coast expertise, we&apos;d like to hear from you.
-              </p>
-              <Button href="/contact" variant="secondary" size="lg">
-                Register Your Interest
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </FadeIn>
+          <SectionHeading
+            badge="Process"
+            title="How it works"
+            subtitle="From first search to final report, our process is designed for speed and clarity."
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            {[
+              {
+                step: '01',
+                title: 'Search your property',
+                description:
+                  'Use our free tool to instantly check any SEQ address for subdivision or development potential.',
+              },
+              {
+                step: '02',
+                title: 'Order a report',
+                description:
+                  'Choose a Preliminary Report ($1,500) to confirm the opportunity before committing further.',
+              },
+              {
+                step: '03',
+                title: 'Get your assessment',
+                description:
+                  'Receive a comprehensive, data-driven assessment within 5-7 business days.',
+              },
+              {
+                step: '04',
+                title: 'Move forward',
+                description:
+                  'Upgrade to a full Subdivision Package or Development Feasibility if the numbers work.',
+              },
+            ].map((item, i) => (
+              <FadeIn key={item.step} delay={i * 0.1}>
+                <div className="text-center">
+                  <span className="inline-block text-3xl font-serif font-bold text-casa-navy/10 mb-2">
+                    {item.step}
+                  </span>
+                  <h3 className="font-semibold text-text-primary mb-2">{item.title}</h3>
+                  <p className="text-sm text-text-secondary leading-relaxed">{item.description}</p>
+                </div>
+              </FadeIn>
+            ))}
           </div>
         </Container>
       </section>

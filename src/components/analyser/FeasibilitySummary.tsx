@@ -3,7 +3,8 @@
 import Brand from '@/components/brand/Brand';
 import { calculateFeasibility, formatCurrency, formatRange, PRE_DEV_COSTS, getOverlayCostLabel, type FeasibilityResult } from '@/lib/feasibility-calc';
 import type { SiteParameters } from './ParameterPanel';
-import { TrendingUp, TrendingDown, AlertTriangle, ShieldAlert, ShieldCheck } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertTriangle, ShieldAlert, ShieldCheck, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from 'react';
 
 interface FeasibilitySummaryProps {
   params: SiteParameters;
@@ -89,6 +90,7 @@ export default function FeasibilitySummary({
   const conf = CONFIDENCE_CONFIG[result.confidenceLevel];
   const hasSlopePremium = result.slopePremium.mid > 0;
   const hasOverlayPremium = result.overlayPremium.mid > 0;
+  const [showBreakdown, setShowBreakdown] = useState(false);
 
   return (
     <div className="space-y-3">
@@ -195,30 +197,40 @@ export default function FeasibilitySummary({
         </div>
       </div>
 
-      {/* Cost breakdown */}
+      {/* Cost breakdown (collapsed by default) */}
       <div className="bg-surface rounded-xl border border-border/50 p-3">
-        <p className="text-[11px] font-semibold text-text-primary mb-2">Cost Breakdown (Estimate)</p>
-        <ResultRow label="Land cost" value={formatCurrency(params.landCost)} />
-        <ResultRow label={`Construction (${result.totalGFA.toLocaleString()}m² GFA)`} value={formatRange(result.constructionCost)} />
-        {hasSlopePremium && (
-          <ResultRow label={`Slope premium (${result.slopeLabel})`} value={formatRange(result.slopePremium)} indent />
-        )}
-        {hasOverlayPremium && (
-          <ResultRow label="Overlay premium" value={formatRange(result.overlayPremium)} indent />
-        )}
-        <ResultRow label="External works (driveways, landscaping, etc.)" value={formatRange(result.externalWorks)} />
-        <ResultRow label="Subdivision / strata" value={formatRange(result.subdivisionCosts)} />
-        <ResultRow label="Contingency (10%)" value={formatRange(result.contingency)} />
-        <ResultRow label="Professional fees (5%)" value={formatRange(result.professionalFees)} />
-        <ResultRow label="Finance costs (8%)" value={formatRange(result.financeCosts)} />
-        <ResultRow label={<>Pre-development (<Brand>Casa Intelligence</Brand>)</>} value={formatRange(result.preDevelopmentCost)} />
-        <ResultRow label={`Infrastructure charges (${params.numberOfUnits} dwellings)`} value={formatRange(result.infrastructureCharges)} />
-        <ResultRow label="DA lodgement fees" value={formatRange(result.daFees)} />
-        <ResultRow label="Marketing & selling (3%)" value={formatRange(result.marketingAndSelling)} />
-        <div className="flex justify-between items-center py-2 mt-1 border-t border-casa-navy/10">
+        <div className="flex justify-between items-center py-1">
           <span className="text-xs font-semibold text-text-primary">Total Development Cost</span>
           <span className="text-xs font-bold text-casa-navy">{formatRange(result.totalDevelopmentCost)}</span>
         </div>
+        <button
+          onClick={() => setShowBreakdown(!showBreakdown)}
+          className="flex items-center gap-1 text-[10px] text-casa-navy font-medium mt-1 hover:underline"
+        >
+          {showBreakdown ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          {showBreakdown ? 'Hide detailed breakdown' : 'View detailed breakdown'}
+        </button>
+        {showBreakdown && (
+          <div className="mt-2 pt-2 border-t border-border/30">
+            <ResultRow label="Land cost" value={formatCurrency(params.landCost)} />
+            <ResultRow label={`Construction (${result.totalGFA.toLocaleString()}m² GFA)`} value={formatRange(result.constructionCost)} />
+            {hasSlopePremium && (
+              <ResultRow label={`Slope premium (${result.slopeLabel})`} value={formatRange(result.slopePremium)} indent />
+            )}
+            {hasOverlayPremium && (
+              <ResultRow label="Overlay premium" value={formatRange(result.overlayPremium)} indent />
+            )}
+            <ResultRow label="External works (driveways, landscaping, etc.)" value={formatRange(result.externalWorks)} />
+            <ResultRow label="Subdivision / strata" value={formatRange(result.subdivisionCosts)} />
+            <ResultRow label="Contingency (10%)" value={formatRange(result.contingency)} />
+            <ResultRow label="Professional fees (5%)" value={formatRange(result.professionalFees)} />
+            <ResultRow label="Finance costs (8%)" value={formatRange(result.financeCosts)} />
+            <ResultRow label={<>Pre-development (<Brand>Casa Intelligence</Brand>)</>} value={formatRange(result.preDevelopmentCost)} />
+            <ResultRow label={`Infrastructure charges (${params.numberOfUnits} dwellings)`} value={formatRange(result.infrastructureCharges)} />
+            <ResultRow label="DA lodgement fees" value={formatRange(result.daFees)} />
+            <ResultRow label="Marketing & selling (3%)" value={formatRange(result.marketingAndSelling)} />
+          </div>
+        )}
       </div>
 
       {/* Status quo comparison */}

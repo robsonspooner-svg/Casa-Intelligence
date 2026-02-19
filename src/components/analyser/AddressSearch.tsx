@@ -22,6 +22,7 @@ export default function AddressSearch({ onSelect }: AddressSearchProps) {
   const [isOpen, setIsOpen] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const justSelectedRef = useRef(false);
 
   const search = useCallback(async (q: string) => {
     if (q.length < 3) {
@@ -51,6 +52,10 @@ export default function AddressSearch({ onSelect }: AddressSearchProps) {
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (justSelectedRef.current) {
+      justSelectedRef.current = false;
+      return;
+    }
     if (query.length >= 3) {
       debounceRef.current = setTimeout(() => search(query), 400);
     } else {
@@ -90,7 +95,7 @@ export default function AddressSearch({ onSelect }: AddressSearchProps) {
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => results.length > 0 && setIsOpen(true)}
             onKeyDown={handleKeyDown}
-            placeholder="Enter a Sunshine Coast address..."
+            placeholder="Enter any SEQ address..."
             className="w-full h-14 pl-12 pr-4 rounded-2xl border border-border bg-surface text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-casa-navy/20 focus:border-casa-navy transition-colors shadow-card"
           />
         </div>
@@ -119,9 +124,11 @@ export default function AddressSearch({ onSelect }: AddressSearchProps) {
             <button
               key={`${candidate.lat}-${candidate.lng}-${i}`}
               onClick={() => {
+                justSelectedRef.current = true;
                 onSelect(candidate);
                 setQuery(candidate.address);
                 setIsOpen(false);
+                setResults([]);
               }}
               className="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-subtle transition-colors border-b border-border/50 last:border-b-0"
             >

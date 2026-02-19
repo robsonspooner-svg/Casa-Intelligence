@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { Loader2, MapPin, AlertCircle, AlertTriangle, Building2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
@@ -66,7 +66,11 @@ interface OverlayHit {
 
 type AnalysisPhase = 'idle' | 'loading' | 'loaded' | 'error';
 
-export default function SiteAnalyser() {
+interface SiteAnalyserProps {
+  selectedCandidate?: Candidate | null;
+}
+
+export default function SiteAnalyser({ selectedCandidate }: SiteAnalyserProps = {}) {
   const [phase, setPhase] = useState<AnalysisPhase>('idle');
   const [loadingMessage, setLoadingMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -91,6 +95,16 @@ export default function SiteAnalyser() {
     materialPreset: 'modern',
     salePriceOverride: null,
   });
+
+  // When driven by parent tab, auto-trigger analysis
+  const lastCandidateRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (selectedCandidate && selectedCandidate.address !== lastCandidateRef.current) {
+      lastCandidateRef.current = selectedCandidate.address;
+      handleAddressSelect(selectedCandidate);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCandidate]);
 
   const handleAddressSelect = useCallback(async (candidate: Candidate) => {
     setPhase('loading');
@@ -143,6 +157,25 @@ export default function SiteAnalyser() {
         setMaxHeight(null);
       }
 
+      // Log search to analytics database (fire-and-forget)
+      fetch('/api/log-search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          address: candidate.address,
+          lat: candidate.lat,
+          lng: candidate.lng,
+          suburb: parcelData?.parcel?.locality || candidate.suburb || null,
+          lga: zoningData?.zone?.lga || parcelData?.parcel?.lga || null,
+          zone_name: zoningData?.zone?.name || null,
+          zone_code: zoningData?.zone?.code || null,
+          lot_area_sqm: parcelData?.parcel?.areaSqm || null,
+          lot_plan: parcelData?.parcel?.lotPlan || null,
+          overlays: overlayHits.map((o: OverlayHit) => o.bucket),
+          tab: 'development',
+        }),
+      }).catch(() => {});
+
       setPhase('loaded');
     } catch (err) {
       console.error('Analysis error:', err);
@@ -153,15 +186,17 @@ export default function SiteAnalyser() {
 
   return (
     <div className="space-y-4">
-      {/* Address search */}
-      <div className="max-w-2xl mx-auto">
-        <AddressSearch onSelect={handleAddressSelect} />
-        {phase === 'idle' && (
-          <p className="text-xs text-text-tertiary text-center mt-2">
-            Search any address on the Sunshine Coast
-          </p>
-        )}
-      </div>
+      {/* Address search (hidden when driven by parent tabs) */}
+      {!selectedCandidate && (
+        <div className="max-w-2xl mx-auto">
+          <AddressSearch onSelect={handleAddressSelect} />
+          {phase === 'idle' && (
+            <p className="text-xs text-text-tertiary text-center mt-2">
+              Search any address in South East Queensland
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Loading */}
       {phase === 'loading' && (

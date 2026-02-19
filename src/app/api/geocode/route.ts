@@ -4,9 +4,9 @@ import { NextRequest, NextResponse } from 'next/server';
 const ARCGIS_GEOCODER_URL =
   'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates';
 
-// Sunshine Coast bounding box for biasing results
-const SC_LOCATION = '153.1,-26.7'; // Centre of Sunshine Coast
-const SC_SEARCH_EXTENT = '152.7,-27.0,153.2,-26.3'; // SW lng/lat, NE lng/lat
+// SEQ + Toowoomba bounding box for biasing results
+const SEQ_LOCATION = '152.7,-27.5'; // Centre of search region
+const SEQ_SEARCH_EXTENT = '151.5,-28.5,153.6,-26.0'; // SW lng/lat, NE lng/lat — includes Toowoomba
 
 export async function GET(request: NextRequest) {
   const address = request.nextUrl.searchParams.get('address');
@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
       outFields: '*',
       maxLocations: '8',
       countryCode: 'AU',
-      location: SC_LOCATION,
-      searchExtent: SC_SEARCH_EXTENT,
+      location: SEQ_LOCATION,
+      searchExtent: SEQ_SEARCH_EXTENT,
       f: 'json',
     });
 

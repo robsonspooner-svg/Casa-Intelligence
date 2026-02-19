@@ -1,10 +1,9 @@
 import { Metadata } from 'next';
-import Hero from '@/components/sections/Hero';
+import HomePageClient from '@/components/sections/HomePageClient';
 import ServicesOverview from '@/components/sections/ServicesOverview';
 import WhyCasa from '@/components/sections/WhyCasa';
 import IntelligenceEngine from '@/components/sections/IntelligenceEngine';
 import Process from '@/components/sections/Process';
-import SiteAnalyserPreview from '@/components/sections/SiteAnalyserPreview';
 import MarketContext from '@/components/sections/MarketContext';
 import CostOfInaction from '@/components/sections/CostOfInaction';
 import Team from '@/components/sections/Team';
@@ -13,7 +12,7 @@ import ContactCTA from '@/components/sections/ContactCTA';
 export const metadata: Metadata = {
   title: 'Casa Intelligence | Development Feasibility | Sunshine Coast',
   description:
-    'Proprietary development intelligence for the Sunshine Coast and South East Queensland. Data-driven feasibility reports, planning analysis, and pre-development advisory. Know your site before you commit.',
+    'Proprietary development intelligence for the Sunshine Coast and South East Queensland. Free subdivision checker, development feasibility, planning analysis, and pre-development advisory. Know your site before you commit.',
   keywords: [
     'sunshine coast development',
     'queensland development',
@@ -30,11 +29,14 @@ export const metadata: Metadata = {
     'property development queensland',
     'development consultant sunshine coast',
     'sunshine coast planning assessment',
+    'subdivision checker sunshine coast',
+    'is my property subdividable',
+    'subdivision eligibility queensland',
   ],
   openGraph: {
     title: 'Casa Intelligence | Development Intelligence & Feasibility',
     description:
-      'Proprietary development intelligence for the Sunshine Coast. Data-driven feasibility, planning analysis, and pre-development advisory.',
+      'Proprietary development intelligence for the Sunshine Coast. Free subdivision checker, planning analysis, and pre-development advisory.',
     type: 'website',
   },
 };
@@ -42,12 +44,11 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
-      <Hero />
+      <HomePageClient />
       <ServicesOverview />
       <WhyCasa />
       <IntelligenceEngine />
       <Process />
-      <SiteAnalyserPreview />
       <MarketContext />
       <CostOfInaction />
       <Team />

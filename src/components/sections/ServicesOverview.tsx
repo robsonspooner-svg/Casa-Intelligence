@@ -5,52 +5,66 @@ import Card from '@/components/ui/Card';
 import FadeIn from '@/components/ui/FadeIn';
 import SectionHeading from '@/components/ui/SectionHeading';
 import Container from '@/components/layout/Container';
-import { ArrowRight, ClipboardCheck, Layers, TrendingUp } from 'lucide-react';
+import { ArrowRight, FileSearch, Scissors, Building2, Users } from 'lucide-react';
 import Link from 'next/link';
 
 const services = [
   {
-    icon: ClipboardCheck,
-    title: 'Development Feasibility',
-    subtitle: <><Brand>Intelligence</Brand> before commitment</>,
+    icon: FileSearch,
+    title: 'Preliminary Report',
+    price: '$1,500 + GST',
     description:
-      'Our intelligence engine cross-references planning data, construction cost indices, comparable sales, and overlay interactions to produce a feasibility assessment with accuracy no manual process can match. You get a clear, data-driven picture of what your site can deliver before you spend a dollar.',
+      'Desktop assessment confirming zoning, overlays, lot yield, and high-level feasibility. Know whether your site has potential before you commit a dollar.',
     features: [
-      'Automated planning and overlay analysis',
-      'Data-calibrated yield and massing studies',
-      'Market-benchmarked financial pro forma',
-      'Definitive go/no-go recommendation',
+      'Zoning & overlay confirmation',
+      'Lot yield estimate',
+      'High-level feasibility summary',
+      'Delivered in 5 business days',
+    ],
+    href: '/services#preliminary',
+  },
+  {
+    icon: Scissors,
+    title: 'Subdivision Consulting',
+    price: '$10,000 + GST',
+    highlight: true,
+    description:
+      'Expert subdivision consulting from DA strategy through to new title registration. We guide you through every step with council liaison, planning advice, and project oversight.',
+    features: [
+      'Everything in Preliminary Report',
+      'DA strategy & lodgement support',
+      'Council liaison & negotiation',
+      'End-to-end consulting to completion',
+    ],
+    href: '/services#subdivision',
+  },
+  {
+    icon: Building2,
+    title: 'Development Feasibility',
+    price: 'Custom quote',
+    description:
+      'Comprehensive feasibility study integrating planning, architecture, and financial analysis. Scope and pricing tailored to your project\u2019s complexity.',
+    features: [
+      'Detailed yield study & massing',
+      'Financial modelling & sensitivity',
+      'Infrastructure assessment',
+      'Go / no-go recommendation',
     ],
     href: '/services#feasibility',
   },
   {
-    icon: Layers,
-    title: 'Pre-Development Management',
-    subtitle: <><Brand>Intelligence</Brand>-driven approvals</>,
+    icon: Users,
+    title: 'For Agents',
+    price: 'Contact for pricing',
     description:
-      'Intelligence doesn\u2019t stop at the report. Our engine tracks council decision patterns, consultant performance, and timeline benchmarks \u2014 giving us an edge in managing your approvals. One point of accountability, powered by data.',
+      'White-label subdivision and feasibility tools for your agency website. Generate qualified leads and differentiate your brand with development intelligence.',
     features: [
-      'Data-driven consultant procurement',
-      'Council liaison with decision pattern intelligence',
-      'Builder tendering with cost benchmarking',
-      'Milestone tracking and budget protection',
+      'Subdivision eligibility checker',
+      'Development feasibility tool',
+      'Lead capture & CRM integration',
+      'Your brand or co-branded',
     ],
-    href: '/services#management',
-  },
-  {
-    icon: TrendingUp,
-    title: 'Development Partnerships',
-    subtitle: 'Data-backed conviction',
-    badge: 'Coming 2027',
-    description:
-      'We deploy capital where our data tells us the risk-adjusted returns are strongest. Our intelligence engine identifies opportunities before the market prices them in \u2014 and our incentives are fully aligned with yours.',
-    features: [
-      'Intelligence-led site selection',
-      'End-to-end development delivery',
-      'Risk sharing from day one',
-      'Returns maximised through proprietary analysis',
-    ],
-    href: '/services#development',
+    href: '/for-agents',
   },
 ];
 
@@ -61,10 +75,10 @@ export default function ServicesOverview() {
         <SectionHeading
           badge="Our Services"
           title={<><Brand>Intelligence</Brand> applied at every stage</>}
-          subtitle={<>Powered by the most comprehensive development <Brand>intelligence</Brand> engine on the Sunshine Coast. Every service we deliver is backed by proprietary analysis no other firm can access.</>}
+          subtitle="From a quick feasibility check to full project delivery. Every service backed by our proprietary intelligence engine."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((service, index) => (
             <FadeIn key={service.title} delay={index * 0.1}>
               <Card hover className="h-full flex flex-col">
@@ -72,16 +86,16 @@ export default function ServicesOverview() {
                   <div className="w-12 h-12 rounded-xl bg-casa-navy/5 flex items-center justify-center">
                     <service.icon className="w-6 h-6 text-casa-navy" />
                   </div>
-                  {service.badge && (
-                    <span className="text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-full bg-gold/10 text-gold">
-                      {service.badge}
+                  {service.highlight && (
+                    <span className="text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-full bg-casa-navy/10 text-casa-navy">
+                      Popular
                     </span>
                   )}
                 </div>
 
                 <h3 className="font-serif text-xl mb-1">{service.title}</h3>
-                <p className="text-xs font-semibold tracking-wide uppercase text-casa-navy/60 mb-3">
-                  {service.subtitle}
+                <p className="text-sm font-semibold text-casa-navy mb-3">
+                  {service.price}
                 </p>
                 <p className="text-sm text-text-secondary leading-relaxed mb-5">
                   {service.description}

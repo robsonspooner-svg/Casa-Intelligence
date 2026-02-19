@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logLead } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,6 +47,17 @@ export async function POST(request: NextRequest) {
         `,
       });
     }
+
+    // Log lead to database (fire-and-forget)
+    logLead({
+      name,
+      email,
+      phone: phone || null,
+      address: address || null,
+      message,
+      source: 'contact_form',
+      referrer: request.headers.get('referer') || null,
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

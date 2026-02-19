@@ -2,7 +2,7 @@ import Brand from '@/components/brand/Brand';
 import dynamic from 'next/dynamic';
 import Container from '@/components/layout/Container';
 import Link from 'next/link';
-import { ArrowRight, BarChart3, Building2, Layers, MapPin } from 'lucide-react';
+import { ArrowRight, BarChart3, Building2, Layers, MapPin, Scissors } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -105,11 +105,17 @@ const faqJsonLd = {
   ],
 };
 
-const SiteAnalyser = dynamic(() => import('@/components/analyser/SiteAnalyser'), {
+const SiteAnalyserTabs = dynamic(() => import('@/components/analyser/SiteAnalyserTabs'), {
   ssr: false,
 });
 
 const capabilities = [
+  {
+    icon: Scissors,
+    title: 'Subdivision analysis',
+    description:
+      'Instant subdivision eligibility check for any SEQ address. Our system checks zoning, minimum lot sizes, and planning overlays to determine if your land can be subdivided.',
+  },
   {
     icon: MapPin,
     title: 'Cadastral intelligence',
@@ -120,7 +126,7 @@ const capabilities = [
     icon: Layers,
     title: 'Constraint detection',
     description:
-      'Automatic identification of flood, bushfire, heritage, acid sulfate, landslide, and building height overlays from the Sunshine Coast Planning Scheme.',
+      'Automatic identification of flood, bushfire, heritage, acid sulfate, landslide, and building height overlays across SEQ planning schemes.',
   },
   {
     icon: Building2,
@@ -167,10 +173,10 @@ export default function SiteAnalyserPage() {
         </Container>
       </section>
 
-      {/* Analyser (client-side only) */}
+      {/* Analyser with Tabs (client-side only) */}
       <section className="py-6 bg-canvas">
         <Container variant="full">
-          <SiteAnalyser />
+          <SiteAnalyserTabs />
         </Container>
       </section>
 

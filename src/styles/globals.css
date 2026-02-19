@@ -38,6 +38,20 @@
   }
 }
 
+@layer components {
+  /* Hero search bar — restyle AddressSearch for dark hero background */
+  .hero-search input {
+    @apply bg-white/10 border-white/20 text-white placeholder:text-white/40;
+  }
+  .hero-search input:focus {
+    @apply ring-white/20 border-white/40;
+  }
+  .hero-search button {
+    @apply bg-white text-casa-navy hover:bg-white/90;
+  }
+  /* Dropdown stays light for readability */
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

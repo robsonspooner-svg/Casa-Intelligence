@@ -11,6 +11,7 @@ const navigation = [
   { name: 'Home', href: '/' },
   { name: 'Services', href: '/services' },
   { name: 'Site Analyser', href: '/site-analyser' },
+  { name: 'For Agents', href: '/for-agents' },
   { name: 'Articles', href: '/articles' },
   { name: 'About', href: '/about' },
   { name: 'Contact', href: '/contact' },
@@ -50,7 +51,7 @@ export default function Header() {
           />
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-6">
             {navigation.map((item) => (
               <Link
                 key={item.name}

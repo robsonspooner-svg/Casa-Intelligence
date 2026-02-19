@@ -23,6 +23,28 @@ interface ParameterPanelProps {
   suburb?: string | null;
 }
 
+// Logarithmic slider helpers for wide-range inputs
+const LAND_COST_MIN = 200000;
+const LAND_COST_MAX = 40000000;
+const SALE_PRICE_MIN = 200000;
+const SALE_PRICE_MAX = 10000000;
+
+function logToLinear(value: number, min: number, max: number): number {
+  return (Math.log(value) - Math.log(min)) / (Math.log(max) - Math.log(min));
+}
+
+function linearToLog(position: number, min: number, max: number): number {
+  return Math.round(min * Math.pow(max / min, position));
+}
+
+function roundToNearestStep(value: number): number {
+  if (value < 500000) return Math.round(value / 10000) * 10000;
+  if (value < 2000000) return Math.round(value / 25000) * 25000;
+  if (value < 5000000) return Math.round(value / 50000) * 50000;
+  if (value < 10000000) return Math.round(value / 100000) * 100000;
+  return Math.round(value / 250000) * 250000;
+}
+
 export default function ParameterPanel({ params, onChange, maxHeight, parcelAreaSqm, zoneName, suburb }: ParameterPanelProps) {
   const storeyHeight = 3.2;
   const maxStoreys = maxHeight ? Math.floor(maxHeight / storeyHeight) : null;
@@ -72,7 +94,7 @@ export default function ParameterPanel({ params, onChange, maxHeight, parcelArea
         <input
           type="range"
           min={2}
-          max={50}
+          max={200}
           value={params.numberOfUnits}
           onChange={(e) => update('numberOfUnits', parseInt(e.target.value))}
           className={`w-full h-1 ${isOverDense ? 'accent-red-500' : 'accent-casa-navy'}`}
@@ -117,7 +139,7 @@ export default function ParameterPanel({ params, onChange, maxHeight, parcelArea
         <input
           type="range"
           min={50}
-          max={250}
+          max={500}
           step={5}
           value={params.floorAreaPerUnit}
           onChange={(e) => update('floorAreaPerUnit', parseInt(e.target.value))}
@@ -125,7 +147,7 @@ export default function ParameterPanel({ params, onChange, maxHeight, parcelArea
         />
       </div>
 
-      {/* Land cost */}
+      {/* Land cost (logarithmic scale) */}
       <div>
         <div className="flex justify-between mb-1">
           <label className="text-[11px] text-text-secondary">Land Cost</label>
@@ -135,11 +157,13 @@ export default function ParameterPanel({ params, onChange, maxHeight, parcelArea
         </div>
         <input
           type="range"
-          min={200000}
-          max={5000000}
-          step={50000}
-          value={params.landCost}
-          onChange={(e) => update('landCost', parseInt(e.target.value))}
+          min={0}
+          max={1000}
+          value={Math.round(logToLinear(params.landCost, LAND_COST_MIN, LAND_COST_MAX) * 1000)}
+          onChange={(e) => {
+            const raw = linearToLog(parseInt(e.target.value) / 1000, LAND_COST_MIN, LAND_COST_MAX);
+            update('landCost', roundToNearestStep(raw));
+          }}
           className="w-full accent-casa-navy h-1"
         />
       </div>
@@ -209,11 +233,13 @@ export default function ParameterPanel({ params, onChange, maxHeight, parcelArea
         </div>
         <input
           type="range"
-          min={400000}
-          max={3000000}
-          step={25000}
-          value={displayPrice}
-          onChange={(e) => onChange({ ...params, salePriceOverride: parseInt(e.target.value) })}
+          min={0}
+          max={1000}
+          value={Math.round(logToLinear(displayPrice, SALE_PRICE_MIN, SALE_PRICE_MAX) * 1000)}
+          onChange={(e) => {
+            const raw = linearToLog(parseInt(e.target.value) / 1000, SALE_PRICE_MIN, SALE_PRICE_MAX);
+            onChange({ ...params, salePriceOverride: roundToNearestStep(raw) });
+          }}
           className="w-full accent-casa-navy h-1"
         />
         <p className="text-[9px] text-text-tertiary mt-0.5">

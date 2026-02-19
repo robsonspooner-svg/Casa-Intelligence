@@ -113,13 +113,58 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ parcel: null, message: 'No parcel found at this location' });
     }
 
-    // Find the best parcel — prefer ones with lotplan data and real area, skip road reserves
+    // Find the best parcel — skip road reserves and tiny parcels
+    // Geocoded points often land on the road centerline, hitting the road reserve parcel
     let feature = data.features[0];
+    let foundRealParcel = false;
     for (const f of data.features) {
       const attrs = f.attributes || {};
-      if (attrs.lotplan && attrs.lot_area > 0) {
+      const isRoad = (attrs.tenure && /road/i.test(attrs.tenure)) ||
+                     (attrs.lot_area != null && attrs.lot_area > 0 && attrs.lot_area < 50) ||
+                     !attrs.lotplan;
+      if (!isRoad && attrs.lotplan && attrs.lot_area > 0) {
         feature = f;
+        foundRealParcel = true;
         break;
+      }
+    }
+
+    // If point query only returned road reserves, do an envelope query (~55m) to find the real lot
+    if (!foundRealParcel) {
+      try {
+        const latNum = parseFloat(lat);
+        const lngNum = parseFloat(lng);
+        const buffer = 0.0005; // ~55m
+        const envParams = new URLSearchParams({
+          geometry: `${lngNum - buffer},${latNum - buffer},${lngNum + buffer},${latNum + buffer}`,
+          geometryType: 'esriGeometryEnvelope',
+          inSR: '4326',
+          spatialRel: 'esriSpatialRelIntersects',
+          outFields: '*',
+          returnGeometry: 'true',
+          outSR: '4326',
+          f: 'json',
+        });
+
+        const envData = await queryLayer(CADASTRAL_LAYER, envParams);
+
+        if (envData.features && envData.features.length > 0) {
+          // Pick the largest non-road parcel from the envelope results
+          let bestArea = 0;
+          for (const f of envData.features) {
+            const attrs = f.attributes || {};
+            const isRoad = (attrs.tenure && /road/i.test(attrs.tenure)) ||
+                           (attrs.lot_area != null && attrs.lot_area > 0 && attrs.lot_area < 50) ||
+                           !attrs.lotplan;
+            if (!isRoad && attrs.lotplan && attrs.lot_area > bestArea) {
+              bestArea = attrs.lot_area;
+              feature = f;
+              foundRealParcel = true;
+            }
+          }
+        }
+      } catch (envErr) {
+        console.warn('Envelope fallback for road-reserve avoidance failed:', envErr);
       }
     }
 

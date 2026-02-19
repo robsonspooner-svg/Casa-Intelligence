@@ -6,6 +6,7 @@ import { OrbitControls, ContactShadows, Html, Line } from '@react-three/drei';
 import * as THREE from 'three';
 import * as turf from '@turf/turf';
 import { Box, Eye } from 'lucide-react';
+import { useCtrlScrollZoom, CtrlScrollTooltip } from '@/lib/useCtrlScrollZoom';
 import type { SiteParameters } from './ParameterPanel';
 import { TYPICAL_SETBACKS, type ProductType } from '@/lib/feasibility-calc';
 
@@ -709,6 +710,7 @@ export default function MassingViewer({ params, parcelGeometry, maxHeight, maxRe
   const [buildings, setBuildings] = useState<BuildingState[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const { containerRef: scrollRef, showTooltip } = useCtrlScrollZoom();
 
   useEffect(() => { setIsMounted(true); }, []);
 
@@ -774,7 +776,8 @@ export default function MassingViewer({ params, parcelGeometry, maxHeight, maxRe
         </div>
       </div>
 
-      <div className="bg-[#f8f7f5] rounded-xl border border-border/50 overflow-hidden relative flex-1 min-h-[300px]">
+      <div ref={scrollRef} className="bg-[#f8f7f5] rounded-xl border border-border/50 overflow-hidden relative flex-1 min-h-[300px]">
+        {showTooltip && <CtrlScrollTooltip />}
         {viewMode === '3d' ? (
           <Canvas shadows camera={{ position: [40, 30, 40], fov: 45, near: 0.1, far: 2000 }} gl={{ antialias: true, alpha: true }}>
             <color attach="background" args={['#f8f7f5']} />

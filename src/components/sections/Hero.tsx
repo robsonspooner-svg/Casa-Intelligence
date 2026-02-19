@@ -5,10 +5,22 @@ import Button from '@/components/ui/Button';
 import FadeIn from '@/components/ui/FadeIn';
 import Container from '@/components/layout/Container';
 import AnimatedContours from '@/components/hero/AnimatedContours';
-import { ArrowRight, Phone, Search } from 'lucide-react';
-import Link from 'next/link';
+import AddressSearch from '@/components/analyser/AddressSearch';
+import { ArrowRight, Phone } from 'lucide-react';
 
-export default function Hero() {
+interface Candidate {
+  address: string;
+  lat: number;
+  lng: number;
+  score: number;
+  suburb: string;
+}
+
+interface HeroProps {
+  onAddressSelect?: (candidate: Candidate) => void;
+}
+
+export default function Hero({ onAddressSelect }: HeroProps) {
   return (
     <section className="relative min-h-screen flex items-center gradient-hero overflow-hidden">
       {/* Animated contour background */}
@@ -19,10 +31,10 @@ export default function Hero() {
       <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-casa-navy-light/10 rounded-full blur-[128px]" />
 
       <Container variant="wide" className="relative z-10 py-32 md:py-40">
-        <div className="max-w-4xl">
+        <div className="max-w-4xl mx-auto text-center">
           <FadeIn delay={0.1}>
             <span className="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-white/50 mb-6">
-              Development <Brand>Intelligence</Brand>
+              South East Queensland Property <Brand>Intelligence</Brand>
             </span>
           </FadeIn>
 
@@ -35,7 +47,7 @@ export default function Hero() {
           </FadeIn>
 
           <FadeIn delay={0.35}>
-            <p className="text-lg md:text-xl text-white/60 leading-relaxed max-w-2xl mb-10">
+            <p className="text-lg md:text-xl text-white/60 leading-relaxed max-w-2xl mx-auto mb-10">
               Our proprietary system ingests planning schemes, overlays, market
               transactions, construction costs, and council patterns to produce
               insights no manual process can replicate. Every site assessed through
@@ -44,7 +56,7 @@ export default function Hero() {
           </FadeIn>
 
           <FadeIn delay={0.5}>
-            <div className="flex flex-col sm:flex-row items-start gap-4 mb-12">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
               <Button variant="primary" size="lg" href="/contact" className="bg-white text-casa-navy hover:bg-white/90">
                 Book a Free Consultation
                 <ArrowRight className="w-5 h-5" />
@@ -56,25 +68,19 @@ export default function Hero() {
             </div>
           </FadeIn>
 
-          {/* Site Analyser teaser */}
+          {/* Search bar — replaces the old "Preview our intelligence engine" link */}
           <FadeIn delay={0.65}>
-            <Link
-              href="/site-analyser"
-              className="group flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-2xl px-5 py-4 transition-all max-w-md"
-            >
-              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-white/20 transition-colors">
-                <Search className="w-5 h-5 text-white/70" />
+            <div className="max-w-2xl mx-auto">
+              <p className="text-sm font-semibold tracking-wide uppercase text-white/50 mb-3">
+                Search your property now
+              </p>
+              <div className="hero-search">
+                <AddressSearch onSelect={onAddressSelect ?? (() => {})} />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white/90">
-                  Preview our <Brand>intelligence</Brand> engine
-                </p>
-                <p className="text-xs text-white/40">
-                  See a fraction of what our system can do. Free, for any Sunshine Coast address
-                </p>
-              </div>
-              <ArrowRight className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors flex-shrink-0" />
-            </Link>
+              <p className="text-xs text-white/30 mt-2">
+                Free instant analysis for any address in South East Queensland
+              </p>
+            </div>
           </FadeIn>
         </div>
 
