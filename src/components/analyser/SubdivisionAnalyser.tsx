@@ -234,6 +234,7 @@ export default function SubdivisionAnalyser({ selectedCandidate }: SubdivisionAn
             zoneName={zone?.name || null}
             subdivided={subdivided}
             lotCount={lotCount}
+            minFrontageM={eligibility.rule?.minFrontageM}
           />
 
           {/* Result panel */}

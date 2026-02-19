@@ -119,7 +119,8 @@ export default function SubdivisionResult({
 }: SubdivisionResultProps) {
   const isEligible = eligibility.eligible || eligibility.eligibleWithConditions;
   const isUnknownZoning = eligibility.unknownZoning;
-  const showSubdivideButton = isEligible || isUnknownZoning;
+  // Always allow subdivision visualisation — even ineligible sites can preview a theoretical split
+  const showSubdivideButton = true;
 
   return (
     <div className="space-y-3">
@@ -263,13 +264,15 @@ export default function SubdivisionResult({
         </button>
       )}
 
-      {/* Lot count adjuster — visible after subdivide when maxLots > 2 */}
-      {subdivided && maxLots > 2 && (
+      {/* Lot count adjuster — visible after subdivide */}
+      {subdivided && (
         <div className="bg-surface rounded-xl border border-border/50 p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold text-text-primary">Number of lots</p>
-              <p className="text-[10px] text-text-tertiary mt-0.5">Max {maxLots} lots based on min. lot size</p>
+              <p className="text-[10px] text-text-tertiary mt-0.5">
+                {maxLots >= 2 ? `Max ${maxLots} lots based on min. lot size` : 'Adjust to preview subdivision layouts'}
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -281,8 +284,8 @@ export default function SubdivisionResult({
               </button>
               <span className="w-8 text-center text-sm font-semibold text-casa-navy">{lotCount}</span>
               <button
-                onClick={() => onLotCountChange(Math.min(maxLots, lotCount + 1))}
-                disabled={lotCount >= maxLots}
+                onClick={() => onLotCountChange(Math.min(Math.max(maxLots, 4), lotCount + 1))}
+                disabled={lotCount >= Math.max(maxLots, 4)}
                 className="w-8 h-8 rounded-lg border border-border/50 flex items-center justify-center text-text-secondary hover:bg-subtle disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
