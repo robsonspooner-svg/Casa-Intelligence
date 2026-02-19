@@ -138,32 +138,56 @@ export default function SubdivisionMap({ lat, lng, parcelGeometry, overlays, zon
                 const labelFeatures: GeoJSON.Feature[] = [];
 
                 // --- 1) Find the street-facing edge ---
-                // The geocoded point is typically ON the road in front of the property.
-                // We score each edge by: (a) distance from the geocoded point, (b) whether
-                // the point projects cleanly onto the segment (t ∈ [0,1]), and (c) edge
-                // length — street frontages tend to be among the longer edges.
+                // The geocoded point sits ON the road in front of the property.
+                // Strategy: the street is in the direction from the parcel centroid
+                // toward the geocoded point. We pick the edge whose outward-facing
+                // normal best aligns with that "street direction" vector, weighted
+                // by edge length (longer edges are more likely to be the frontage).
                 //
-                // Scoring: lower is better.  score = distance × (t-penalty) / sqrt(edgeLen)
-                //   – t-penalty = 1 if t ∈ [0.05, 0.95], 3 otherwise (point projects past edge ends)
-                //   – dividing by sqrt(edgeLen) favours longer edges
+                // This is far more robust than pure distance-based scoring because
+                // it doesn't get confused by short side edges that happen to be
+                // physically close to the geocoded point.
+                const parcelCtr = turf.centroid(feature);
+                const cLng = parcelCtr.geometry.coordinates[0];
+                const cLat = parcelCtr.geometry.coordinates[1];
+                // Direction from centroid toward the geocoded (street) point
+                const streetDirX = lng - cLng;
+                const streetDirY = lat - cLat;
+                const streetDirLen = Math.sqrt(streetDirX * streetDirX + streetDirY * streetDirY);
+
                 let bestEdgeIdx = 0;
-                let bestScore = Infinity;
+                let bestScore = -Infinity; // higher is better now
                 for (let j = 0; j < ring.length - 1; j++) {
                   const [ex, ey] = ring[j];
                   const [fx, fy] = ring[j + 1];
-                  const dx = fx - ex;
-                  const dy = fy - ey;
-                  const lenSq = dx * dx + dy * dy;
-                  if (lenSq < 1e-14) continue;
-                  const t = ((lng - ex) * dx + (lat - ey) * dy) / lenSq;
-                  const tc = Math.max(0, Math.min(1, t));
-                  const px = ex + tc * dx;
-                  const py = ey + tc * dy;
-                  const dist = Math.sqrt((lng - px) ** 2 + (lat - py) ** 2);
-                  const edgeLen = Math.sqrt(lenSq);
-                  const tPenalty = (t >= 0.05 && t <= 0.95) ? 1 : 3;
-                  const score = (dist * tPenalty) / Math.sqrt(edgeLen);
-                  if (score < bestScore) {
+                  const eDx = fx - ex;
+                  const eDy = fy - ey;
+                  const eLen = Math.sqrt(eDx * eDx + eDy * eDy);
+                  if (eLen < 1e-10) continue;
+
+                  // Outward-facing normal: for a CCW polygon, outward is (dy, -dx).
+                  // For CW polygon, it's (-dy, dx). We'll compute both and pick the
+                  // one that points AWAY from centroid (i.e. outward).
+                  const edgeMidX = (ex + fx) / 2;
+                  const edgeMidY = (ey + fy) / 2;
+                  let nx = eDy / eLen;
+                  let ny = -eDx / eLen;
+                  // Ensure normal points outward (away from centroid)
+                  if ((edgeMidX + nx - cLng) * (edgeMidX + nx - cLng) +
+                      (edgeMidY + ny - cLat) * (edgeMidY + ny - cLat) <
+                      (edgeMidX - nx - cLng) * (edgeMidX - nx - cLng) +
+                      (edgeMidY - ny - cLat) * (edgeMidY - ny - cLat)) {
+                    nx = -nx;
+                    ny = -ny;
+                  }
+
+                  // Score = dot(outwardNormal, streetDir) × edgeLength
+                  // This favours edges that face toward the street AND are long
+                  const dot = streetDirLen > 1e-14
+                    ? (nx * streetDirX + ny * streetDirY) / streetDirLen
+                    : 0;
+                  const score = dot * eLen;
+                  if (score > bestScore) {
                     bestScore = score;
                     bestEdgeIdx = j;
                   }
@@ -178,15 +202,12 @@ export default function SubdivisionMap({ lat, lng, parcelGeometry, overlays, zon
                 const ux = edgeDx / edgeLen; // unit along street
                 const uy = edgeDy / edgeLen;
 
-                // Perpendicular — ensure it points INTO the parcel
+                // Perpendicular — ensure it points INTO the parcel (toward centroid)
                 let perpX = -uy;
                 let perpY = ux;
-                const parcelCentroid = turf.centroid(feature);
-                const ctrX = parcelCentroid.geometry.coordinates[0];
-                const ctrY = parcelCentroid.geometry.coordinates[1];
                 const midX = (ax + bx) / 2;
                 const midY = (ay + by) / 2;
-                if ((ctrX - midX) * perpX + (ctrY - midY) * perpY < 0) {
+                if ((cLng - midX) * perpX + (cLat - midY) * perpY < 0) {
                   perpX = -perpX;
                   perpY = -perpY;
                 }
