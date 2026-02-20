@@ -118,6 +118,7 @@ export default function SubdivisionResult({
   onLotCountChange,
 }: SubdivisionResultProps) {
   const isEligible = eligibility.eligible || eligibility.eligibleWithConditions;
+  const isDualOcc = eligibility.dualOccPathway;
   const isUnknownZoning = eligibility.unknownZoning;
   // Always allow subdivision visualisation — even ineligible sites can preview a theoretical split
   const showSubdivideButton = true;
@@ -212,6 +213,8 @@ export default function SubdivisionResult({
       <div className={`rounded-xl border p-4 ${
         isEligible
           ? 'bg-emerald-50 border-emerald-200'
+          : isDualOcc
+          ? 'bg-teal-50 border-teal-200'
           : isUnknownZoning
           ? 'bg-amber-50 border-amber-200'
           : 'bg-red-50 border-red-200'
@@ -219,35 +222,47 @@ export default function SubdivisionResult({
         <div className="flex items-center gap-2 mb-2">
           {isEligible ? (
             <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+          ) : isDualOcc ? (
+            <CheckCircle2 className="w-5 h-5 text-teal-600" />
           ) : isUnknownZoning ? (
             <AlertTriangle className="w-5 h-5 text-amber-600" />
           ) : (
             <XCircle className="w-5 h-5 text-red-600" />
           )}
           <h4 className={`text-sm font-semibold ${
-            isEligible ? 'text-emerald-800' : isUnknownZoning ? 'text-amber-800' : 'text-red-800'
+            isEligible ? 'text-emerald-800' : isDualOcc ? 'text-teal-800' : isUnknownZoning ? 'text-amber-800' : 'text-red-800'
           }`}>
             {eligibility.eligible
               ? 'Eligible for Subdivision'
-              : eligibility.eligibleWithConditions
+              : eligibility.eligibleWithConditions && !isDualOcc
               ? 'Eligible with Conditions'
+              : isDualOcc
+              ? 'Eligible via Duplex Subdivision'
               : isUnknownZoning
               ? 'May Be Subdividable'
               : 'Not Eligible for Subdivision'}
           </h4>
         </div>
         <p className={`text-xs leading-relaxed ${
-          isEligible ? 'text-emerald-700' : isUnknownZoning ? 'text-amber-700' : 'text-red-700'
+          isEligible ? 'text-emerald-700' : isDualOcc ? 'text-teal-700' : isUnknownZoning ? 'text-amber-700' : 'text-red-700'
         }`}>
           {eligibility.reason}
         </p>
 
+        {/* Dual occ pathway explanation */}
+        {isDualOcc && (
+          <div className="mt-3 pt-3 border-t border-teal-200">
+            <p className="text-[10px] text-teal-800 font-semibold uppercase tracking-wider mb-1">Pathway</p>
+            <p className="text-[11px] text-teal-700">Dual occupancy (duplex) approval followed by lot reconfiguration. This is the most common subdivision pathway for residential lots in this zone.</p>
+          </div>
+        )}
+
         {/* Overlay conditions */}
         {eligibility.eligibleWithConditions && eligibility.overlayRestrictions.length > 0 && (
-          <div className="mt-3 pt-3 border-t border-emerald-200 space-y-1.5">
-            <p className="text-[10px] text-emerald-800 font-semibold uppercase tracking-wider">Conditions</p>
+          <div className={`mt-3 pt-3 border-t ${isDualOcc ? 'border-teal-200' : 'border-emerald-200'} space-y-1.5`}>
+            <p className={`text-[10px] font-semibold uppercase tracking-wider ${isDualOcc ? 'text-teal-800' : 'text-emerald-800'}`}>Conditions</p>
             {eligibility.overlayRestrictions.map((r) => (
-              <p key={r.bucket} className="text-[11px] text-emerald-700">{r.description}</p>
+              <p key={r.bucket} className={`text-[11px] ${isDualOcc ? 'text-teal-700' : 'text-emerald-700'}`}>{r.description}</p>
             ))}
           </div>
         )}
