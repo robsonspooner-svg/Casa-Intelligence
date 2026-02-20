@@ -46,7 +46,18 @@ Every data source below is publicly available or purchasable. This is the raw ma
 | **Vegetation Management** | Regulated vegetation mapping | ArcGIS REST (DNRM) | All QLD | Annual |
 | **Koala Habitat** | Priority & non-priority areas | ArcGIS REST (DES) | SEQ | Annual |
 | **SCC Open Data** | Multiple planning datasets | Open Data Portal (`data.sunshinecoast.qld.gov.au`) | SCC | Varies |
-| **Elevation/Contours** | DEM, contour lines | QLD Globe / SRTM | All QLD | Static |
+| **Elevation/Contours** | DEM, contour lines | QLD Globe / SRTM / ELVIS | All QLD | Static |
+| **RTA Median Rents** | Median weekly rents by suburb, type, beds | CSV download (`rta.qld.gov.au/median-rents`) | All QLD | Quarterly |
+| **QLD Property Sales** | Actual sale prices, dates, lot/plan | CSV download (`data.qld.gov.au/dataset/property-sales-data`) | All QLD | Quarterly |
+| **QLD Land Valuations** | Unimproved land values per lot | QLD Globe / `data.qld.gov.au` | All QLD | Annual |
+| **TransLink GTFS** | All bus/train/ferry routes + stops + timetables | GTFS feed (`gtfsrt.api.translink.com.au`) | SEQ | Per timetable change |
+| **BCC ePlan** | Full digital planning scheme (zones, codes, AOs) | HTML (`eplan.brisbane.qld.gov.au`) | BCC | With amendments |
+| **QGSO Population Projections** | Population + household + dwelling projections by LGA/SA2 | Excel/CSV (`qgso.qld.gov.au`) | All QLD | 2-3 years |
+| **ABS Census / Stat API** | Demographics, income, dwelling counts, household comp | REST API (`stat.data.abs.gov.au`) | All Australia | 5 years |
+| **QTRIP Infrastructure** | 4-year forward program of road/transport projects | PDF/Excel (`tmr.qld.gov.au`) | All QLD | Annual |
+| **School Directory** | School locations, catchments, enrolment data | Web (`schoolsdirectory.eq.edu.au`) | All QLD | Annual |
+| **Wetlands & Waterways** | Wetland mapping, waterway health | WMS (`wetlandinfo.des.qld.gov.au`) | All QLD | Periodic |
+| **BCC & Council DA Portals** | DAs for BCC, Gold Coast, Ipswich, Redland | Development.i / ePathway / ArcGIS | Per council | Near real-time |
 
 #### Tier 2: Purchasable/Licensed Data
 
@@ -618,6 +629,27 @@ CREATE TABLE ci_market_data (
 CREATE INDEX idx_ci_market_suburb ON ci_market_data (suburb, data_type, date);
 CREATE INDEX idx_ci_market_lga ON ci_market_data (lga, data_type, date);
 CREATE INDEX idx_ci_market_property ON ci_market_data (property_id);
+
+-- =============================================================
+-- RTA RENTAL DATA (Authoritative QLD rental data — FREE)
+-- Ingested quarterly from rta.qld.gov.au/median-rents
+-- =============================================================
+CREATE TABLE ci_rta_rents (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  quarter         TEXT NOT NULL,               -- '2025-Q4'
+  lga             TEXT NOT NULL,
+  suburb          TEXT NOT NULL,
+  property_type   TEXT NOT NULL,               -- 'House', 'Unit', 'Townhouse'
+  bedrooms        INTEGER,
+  median_rent     NUMERIC,
+  new_bonds       INTEGER,                     -- Number of new bonds lodged (proxy for rental volume)
+  quarterly_change_pct NUMERIC,
+  created_at      TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(quarter, suburb, property_type, bedrooms)
+);
+
+CREATE INDEX idx_ci_rta_suburb ON ci_rta_rents (suburb, property_type);
+CREATE INDEX idx_ci_rta_lga ON ci_rta_rents (lga, quarter);
 
 -- =============================================================
 -- SUBURB ANALYTICS (Pre-computed)
